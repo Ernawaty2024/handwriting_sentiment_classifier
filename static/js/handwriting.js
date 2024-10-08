@@ -1,157 +1,141 @@
 window.onload = function() {
     var canvas = document.getElementById('handwritingCanvas');
     var context = canvas.getContext('2d');
-    var handwritingData = []; // Store handwriting data here
     var isDrawing = false;
+    var drawingData = [];
     var prevTimestamp, prevX, prevY;
 
-    // Conversion factor from cm to pixels (1 cm = ~37.8 pixels)
-    const cmToPx = 37.8;
+    // Set canvas size
+    canvas.width = 600;
+    canvas.height = 300;
 
-    // Set canvas size (13.5 cm width x (3 cm + 1.2 cm space + 3 cm) height)
-    canvas.width = 13.5 * cmToPx;  // 13.5 cm width
-    canvas.height = (3 + 1.2 + 3) * cmToPx;  // Total height including space between boxes
+    // Draw predefined lines and cursive template when canvas loads
+    drawTemplate(context, canvas.width, canvas.height);
 
-    // Draw Box A and Box B when canvas loads
-    drawBoxA(context, 0, 0, 13.5 * cmToPx, 3 * cmToPx, cmToPx);
-    drawBoxB(context, 0, (3 + 1.2) * cmToPx, 13.5 * cmToPx, 3 * cmToPx, cmToPx);
-
-    // Handle mouse down
+    // Start drawing when the pointer is pressed down (Apple Pencil supported)
     canvas.onpointerdown = function(e) {
         isDrawing = true;
         prevTimestamp = Date.now();
         prevX = e.clientX - canvas.offsetLeft;
         prevY = e.clientY - canvas.offsetTop;
-        handwritingData.push({
+        context.beginPath();
+        context.moveTo(prevX, prevY);
+        drawingData.push({
             x: prevX,
             y: prevY,
             timestamp: prevTimestamp,
-            pressure: e.pressure || 0.5,  // Apple Pencil pressure
-            tiltX: e.tiltX || 0,          // Tilt in X-axis
-            tiltY: e.tiltY || 0,          // Tilt in Y-axis
-            azimuth: e.azimuthAngle || 0  // Azimuth angle
+            pressure: e.pressure || 0.5,  // Pressure from Apple Pencil (default 0.5 for non-pen)
+            tiltX: e.tiltX || 0,          // Stylus tilt in X-axis
+            tiltY: e.tiltY || 0,          // Stylus tilt in Y-axis
+            azimuth: e.azimuthAngle || 0  // Stylus azimuth angle
         });
-        context.beginPath();
-        context.moveTo(prevX, prevY);
     };
 
-    // Handle mouse move
+    // Continue drawing and capture data including speed
     canvas.onpointermove = function(e) {
         if (isDrawing) {
             var currentTimestamp = Date.now();
             var currentX = e.clientX - canvas.offsetLeft;
             var currentY = e.clientY - canvas.offsetTop;
-            var timeDiff = (currentTimestamp - prevTimestamp) / 1000;  // Time in seconds
-            var distance = Math.sqrt(Math.pow(currentX - prevX, 2) + Math.pow(currentY - prevY, 2));
-            var speed = distance / timeDiff;
 
+            // Calculate time difference
+            var timeDifference = (currentTimestamp - prevTimestamp) / 1000;  // Time in seconds
+            
+            // Calculate distance traveled using Euclidean distance
+            var distance = Math.sqrt(Math.pow(currentX - prevX, 2) + Math.pow(currentY - prevY, 2));
+            
+            // Calculate speed (distance / time)
+            var speed = distance / timeDifference;
+
+            // Draw the stroke
             context.lineTo(currentX, currentY);
             context.stroke();
 
-            handwritingData.push({
+            // Capture drawing data with speed, pressure, tilt, and azimuth
+            drawingData.push({
                 x: currentX,
                 y: currentY,
                 timestamp: currentTimestamp,
                 speed: speed,
-                pressure: e.pressure || 0.5,
-                tiltX: e.tiltX || 0,
-                tiltY: e.tiltY || 0,
-                azimuth: e.azimuthAngle || 0
+                pressure: e.pressure || 0.5,  // Pressure from Apple Pencil
+                tiltX: e.tiltX || 0,          // Tilt in X-axis
+                tiltY: e.tiltY || 0,          // Tilt in Y-axis
+                azimuth: e.azimuthAngle || 0  // Azimuth angle
             });
 
+            // Update previous position and timestamp for the next calculation
             prevX = currentX;
             prevY = currentY;
             prevTimestamp = currentTimestamp;
         }
     };
 
-    // Handle mouse up
+    // Stop drawing when pointer is lifted
     canvas.onpointerup = function() {
         isDrawing = false;
     };
 
-    // Clear canvas
+    // Clear the canvas and redraw the template
     document.getElementById('clearCanvas').onclick = function() {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        drawBoxA(context, 0, 0, 13.5 * cmToPx, 3 * cmToPx, cmToPx);
-        drawBoxB(context, 0, (3 + 1.2) * cmToPx, 13.5 * cmToPx, 3 * cmToPx, cmToPx);
-        handwritingData = [];  // Clear stored data
+        drawTemplate(context, canvas.width, canvas.height);  // Redraw the template
+        drawingData = [];  // Clear drawing data
     };
 
-    // Submit handwriting data to Flask
+    // Submit handwriting data
     document.getElementById('submitCanvas').onclick = function() {
+        // Prepare the handwriting data to send to the server
+        var handwritingData = JSON.stringify(drawingData);
+
+        // Send the data via fetch API to the back-end
         fetch('/submit_handwriting', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(handwritingData)
+            body: handwritingData
         })
         .then(response => response.json())
         .then(data => {
-            // Show the prediction result on the page
-            document.getElementById('predictionResult').innerText = `Predicted Emotion: ${data.emotion}`;
+            document.getElementById('predictionResult').innerText = `Emotion: ${data.emotion}`;
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            console.error('Error:', error);
+        });
     };
 };
 
-// Functions to draw the handwriting template (Box A and Box B)
-function drawBoxA(context, x, y, width, height, cmToPx) {
-    let lineSpacing = 0.6 * cmToPx;
-    let startY = y;
-
-    context.strokeStyle = '#000';
+// Function to draw the handwriting template
+function drawTemplate(context, width, height) {
+    // Define line spacing and text for template
+    const topLineY = 80;
+    const middleLineY = 140;
+    const bottomLineY = 200;
+    
+    context.strokeStyle = '#000';  // Black for predefined lines
     context.lineWidth = 1;
 
-    for (let i = 0; i < 6; i++) {
-        context.beginPath();
-        context.moveTo(x, startY);
-        context.lineTo(x + width, startY);
-        context.stroke();
-        startY += lineSpacing;
-    }
-
-    context.font = '50px Dancing Script';
-    context.textBaseline = 'alphabetic';
-    context.fillText('Ants build kingdoms', x + 10, y + 4 * lineSpacing - 5);
-}
-
-function drawBoxB(context, x, y, width, height, cmToPx) {
-    let topLine = 1.2 * cmToPx;
-    let midLine = 0.6 * cmToPx;
-    let bottomLine = 1.2 * cmToPx;
-    let startY = y;
-
-    context.strokeStyle = '#000';
-    context.lineWidth = 1;
-
+    // Draw horizontal lines for writing guidance
     context.beginPath();
-    context.moveTo(x, startY);
-    context.lineTo(x + width, startY);
+    context.moveTo(30, topLineY);
+    context.lineTo(width - 30, topLineY);
     context.stroke();
 
-    startY += topLine;
-    context.beginPath();
-    context.moveTo(x, startY);
-    context.lineTo(x + width, startY);
+    context.moveTo(30, middleLineY);
+    context.lineTo(width - 30, middleLineY);
     context.stroke();
 
-    startY += midLine;
-    context.beginPath();
-    context.moveTo(x, startY);
-    context.lineTo(x + width, startY);
+    context.moveTo(30, bottomLineY);
+    context.lineTo(width - 30, bottomLineY);
     context.stroke();
 
-    startY += bottomLine;
-    context.beginPath();
-    context.moveTo(x, startY);
-    context.lineTo(x + width, startY);
-    context.stroke();
+    // Draw example cursive text in the middle line (solid)
+    context.font = '30px Dancing Script';
+    context.fillText('Ants build kingdoms', 40, middleLineY - 10);
 
-    context.font = '50px Dancing Script';
-    context.textBaseline = 'alphabetic';
-    context.setLineDash([1,3]);
-    context.strokeText('Ants build kingdoms', x + 10, y + topLine + midLine - 5);
-    context.setLineDash([]);
+    // Draw dotted version of the text as a tracing guide
+    context.setLineDash([5, 5]);  // Set dash pattern for dotted line
+    context.strokeText('Ants build kingdoms', 40, bottomLineY - 10);
+
+    context.setLineDash([]);  // Reset dash to default (solid line)
 }

@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, jsonify
-import pickle
+import joblib
 import numpy as np
 
 app = Flask(__name__)
 
 # Load the trained Random Forest model
-with open('rf_model.pkl', 'rb') as model_file:
-    rf_model = pickle.load(model_file)
+with open('optimized_rf_model.joblib', 'rb') as model_file:
+    best_rf_model = joblib.load(model_file)
 
 # Function to preprocess the handwriting data
 def preprocess_data(handwriting_data):
@@ -44,7 +44,7 @@ def submit_handwriting():
     preprocessed_data = preprocess_data(handwriting_data)
 
     # Make prediction using the Random Forest model
-    prediction = rf_model.predict(preprocessed_data)
+    prediction = best_rf_model.predict(preprocessed_data)
 
     # Send the prediction result back to the front-end
     return jsonify({'emotion': prediction[0]})
