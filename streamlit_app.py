@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request, jsonify
+import streamlit as st
 import joblib
 import numpy as np
 
-app = Flask(__name__)
-
 # Load the trained Random Forest model
-with open('optimized_rf_model.joblib', 'rb') as model_file:
-    best_rf_model = joblib.load(model_file)
+@st.cache_resource
+def load_model():
+    with open('optimized_rf_model.joblib', 'rb') as model_file:
+        return joblib.load(model_file)
+
+best_rf_model = load_model()
 
 # Function to preprocess the handwriting data
 def preprocess_data(handwriting_data):
@@ -29,25 +31,29 @@ def preprocess_data(handwriting_data):
     # Return the features as a numpy array
     return np.array([features])
 
-# Route for the main page
-@app.route('/')
-def index():
-    return render_template('index.html')
+# Streamlit UI for the application
+st.title('Handwriting Sentiment Classifier')
 
-# Route for handling handwriting submission and making predictions
-@app.route('/submit_handwriting', methods=['POST'])
-def submit_handwriting():
-    # Get the handwriting data from the front-end
-    handwriting_data = request.json
+# Collect handwriting data from the user
+st.subheader('Handwriting Data Input')
 
-    # Preprocess the data to get the features for prediction
-    preprocessed_data = preprocess_data(handwriting_data)
+# Using text_area to simulate handwriting data input as JSON-like structure
+handwriting_input = st.text_area("Paste the handwriting data (JSON format):", height=200)
 
-    # Make prediction using the Random Forest model
-    prediction = best_rf_model.predict(preprocessed_data)
+# Button to trigger prediction
+if st.button("Submit Handwriting"):
+    try:
+        # Convert the input text to a Python dict (Assuming it's provided in JSON format)
+        handwriting_data = eval(handwriting_input)  # Alternatively, use json.loads() if input is in strict JSON format
 
-    # Send the prediction result back to the front-end
-    return jsonify({'emotion': prediction[0]})
+        # Preprocess the data for prediction
+        preprocessed_data = preprocess_data(handwriting_data)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+        # Make prediction using the Random Forest model
+        prediction = best_rf_model.predict(preprocessed_data)
+
+        # Display the result
+        st.success(f"Predicted Emotion: {prediction[0]}")
+    except Exception as e:
+        st.error(f"Error processing input: {e}")
+
