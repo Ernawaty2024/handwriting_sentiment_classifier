@@ -5,17 +5,21 @@ import numpy as np
 app = Flask(__name__)
 
 # Load the trained Random Forest model
-with open('optimized_rf_model.joblib', 'rb') as model_file:
-    best_rf_model = joblib.load(model_file)
+try:
+    with open('optimized_rf_model.joblib', 'rb') as model_file:
+        best_rf_model = joblib.load(model_file)
+    print("Model loaded successfully!")
+except Exception as e:
+    print(f"Error loading model: {e}")
 
 # Function to preprocess the handwriting data
 def preprocess_data(handwriting_data):
-    # Extract features from the handwriting data
-    speeds = [d['speed'] for d in handwriting_data if 'speed' in d]
-    pressures = [d['pressure'] for d in handwriting_data if 'pressure' in d]
-    tiltXs = [d['tiltX'] for d in handwriting_data if 'tiltX' in d]
-    tiltYs = [d['tiltY'] for d in handwriting_data if 'tiltY' in d]
-    azimuths = [d['azimuth'] for d in handwriting_data if 'azimuth' in d]
+    # Handle cases where speed, pressure, etc., may be None
+    speeds = [d['speed'] for d in handwriting_data if 'speed' in d and d['speed'] is not None]
+    pressures = [d['pressure'] for d in handwriting_data if 'pressure' in d and d['pressure'] is not None]
+    tiltXs = [d['tiltX'] for d in handwriting_data if 'tiltX' in d and d['tiltX'] is not None]
+    tiltYs = [d['tiltY'] for d in handwriting_data if 'tiltY' in d and d['tiltY'] is not None]
+    azimuths = [d['azimuth'] for d in handwriting_data if 'azimuth' in d and d['azimuth'] is not None]
 
     # Aggregate features (e.g., mean values)
     features = [
@@ -29,6 +33,7 @@ def preprocess_data(handwriting_data):
     # Return the features as a numpy array
     return np.array([features])
 
+
 # Route for the main page
 @app.route('/')
 def index():
@@ -40,6 +45,7 @@ def submit_handwriting():
     try:
         # Get the handwriting data from the front-end
         handwriting_data = request.json
+        print(f"Received handwriting data: {handwriting_data}")
         
         # Check if the data is received correctly
         if handwriting_data is None:
@@ -51,6 +57,9 @@ def submit_handwriting():
         # Make prediction using the Random Forest model
         prediction = best_rf_model.predict(preprocessed_data)
         
+        # Log the prediction result to check if it works correctly
+        print(f"Prediction: {prediction}")
+
         # Return the prediction result as JSON
         return jsonify({'emotion': prediction[0]})
     
