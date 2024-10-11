@@ -82,10 +82,13 @@ window.onload = function() {
         drawingData = [];  // Clear drawing data
     };
 
-    // Submit handwriting data
+    // Submit handwriting data and display the captured data
     document.getElementById('submitCanvas').onclick = function() {
         // Prepare the handwriting data to send to the server
-        var handwritingData = JSON.stringify(drawingData);
+        var handwritingData = JSON.stringify(drawingData, null, 2); // Pretty-print JSON
+
+        // Show captured data on the website
+        document.getElementById('capturedData').innerText = handwritingData;
 
         // Send the data via fetch API to the back-end
         fetch('/submit_handwriting', {
@@ -97,6 +100,7 @@ window.onload = function() {
         })
         .then(response => response.json())
         .then(data => {
+            // Display the prediction result on the website
             document.getElementById('predictionResult').innerText = `Emotion: ${data.emotion}`;
         })
         .catch(error => {
