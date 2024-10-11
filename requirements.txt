@@ -33,5 +33,5 @@ virtualenv==20.26.6
 
 webencodings==0.5.1
 
-
+waitress==3.0.0
 
