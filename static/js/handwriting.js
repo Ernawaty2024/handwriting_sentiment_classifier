@@ -1,4 +1,4 @@
-window.onload = function() {
+window.onload = function () {
     var canvas = document.getElementById('handwritingCanvas');
     var context = canvas.getContext('2d');
     var isDrawing = false;
@@ -13,7 +13,7 @@ window.onload = function() {
     drawTemplate(context, canvas.width, canvas.height);
 
     // Start drawing when the pointer is pressed down (Apple Pencil supported)
-    canvas.onpointerdown = function(e) {
+    canvas.onpointerdown = function (e) {
         isDrawing = true;
         prevTimestamp = Date.now();
         prevX = e.clientX - canvas.offsetLeft;
@@ -32,7 +32,7 @@ window.onload = function() {
     };
 
     // Continue drawing and capture data including speed
-    canvas.onpointermove = function(e) {
+    canvas.onpointermove = function (e) {
         if (isDrawing) {
             var currentTimestamp = Date.now();
             var currentX = e.clientX - canvas.offsetLeft;
@@ -40,10 +40,10 @@ window.onload = function() {
 
             // Calculate time difference
             var timeDifference = (currentTimestamp - prevTimestamp) / 1000;  // Time in seconds
-            
+
             // Calculate distance traveled using Euclidean distance
             var distance = Math.sqrt(Math.pow(currentX - prevX, 2) + Math.pow(currentY - prevY, 2));
-            
+
             // Calculate speed (distance / time)
             var speed = distance / timeDifference;
 
@@ -56,7 +56,7 @@ window.onload = function() {
                 x: currentX,
                 y: currentY,
                 timestamp: currentTimestamp,
-                speed: speed,
+                speed: speed || 0,            // Speed of drawing
                 pressure: e.pressure || 0.5,  // Pressure from Apple Pencil
                 tiltX: e.tiltX || 0,          // Tilt in X-axis
                 tiltY: e.tiltY || 0,          // Tilt in Y-axis
@@ -71,19 +71,19 @@ window.onload = function() {
     };
 
     // Stop drawing when pointer is lifted
-    canvas.onpointerup = function() {
+    canvas.onpointerup = function () {
         isDrawing = false;
     };
 
     // Clear the canvas and redraw the template
-    document.getElementById('clearCanvas').onclick = function() {
+    document.getElementById('clearCanvas').onclick = function () {
         context.clearRect(0, 0, canvas.width, canvas.height);
         drawTemplate(context, canvas.width, canvas.height);  // Redraw the template
         drawingData = [];  // Clear drawing data
     };
 
     // Submit handwriting data
-    document.getElementById('submitCanvas').onclick = function() {
+    document.getElementById('submitCanvas').onclick = function () {
         // Prepare the handwriting data to send to the server
         var handwritingData = JSON.stringify(drawingData);
 
@@ -95,23 +95,29 @@ window.onload = function() {
             },
             body: handwritingData
         })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('predictionResult').innerText = `Emotion: ${data.emotion}`;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();  // Try to parse JSON response
+            })
+            .then(data => {
+                document.getElementById('predictionResult').innerText = `Emotion: ${data.emotion}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('predictionResult').innerText = `Error: ${error.message}`;
+            });
     };
 };
 
-// Function to draw the handwriting template (lines and text)
+// Function to draw the handwriting template
 function drawTemplate(context, width, height) {
     // Define line spacing and text for template
     const topLineY = 80;
     const middleLineY = 140;
     const bottomLineY = 200;
-    
+
     context.strokeStyle = '#000';  // Black for predefined lines
     context.lineWidth = 1;
 
