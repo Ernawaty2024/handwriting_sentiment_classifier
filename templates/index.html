@@ -15,10 +15,10 @@
         .canvas-box {
             border: 1px solid #000;
             display: inline-block;
-            margin-bottom: 20px;  /* Space between canvas and buttons */
+            margin-bottom: 20px;
         }
         button {
-            margin: 10px; /* Adds space between the buttons */
+            margin: 10px;
             padding: 10px 20px;
             background-color: #333;
             color: white;
@@ -28,10 +28,10 @@
         button:hover {
             background-color: #555;
         }
-        #capturedData, #predictionResult {
+        #predictionResult {
             margin-top: 20px;
-            text-align: left;
-            white-space: pre-wrap; /* Display JSON data properly */
+            font-size: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -39,25 +39,22 @@
     <h1>Handwriting Data Collection</h1>
     <h2>Write on the Canvas</h2>
     <p>Trace over the solid and dotted text to simulate handwriting</p>
-    <p>Only use iPad and Apple Pencil</p>
 
+    <!-- Canvas for handwriting -->
     <div class="canvas-box">
         <canvas id="handwritingCanvas" width="600" height="300"></canvas>
     </div>
-    
-    <!-- Adjusted: Buttons are moved below the canvas and spaced out -->
+
+    <!-- Buttons for clearing and submitting the canvas data -->
     <div>
         <button id="clearCanvas">Clear</button>
-        <button id="submitCanvas">Submit Handwriting</button>
+        <button id="submitCanvas">Submit</button>
     </div>
 
-    <!-- Divs for displaying captured data and prediction -->
-    <h3>Captured Data</h3>
-    <pre id="capturedData"></pre> <!-- Displays the captured handwriting data -->
+    <!-- Display prediction result -->
+    <div id="predictionResult">Prediction Result will appear here</div>
 
-    <h3>Prediction Result</h3>
-    <p id="predictionResult"></p> <!-- Displays the prediction result -->
-
+    <!-- Include the handwriting JavaScript file -->
     <script src="{{ url_for('static', filename='js/handwriting.js') }}"></script>
 </body>
 </html>

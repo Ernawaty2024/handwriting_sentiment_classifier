@@ -17,7 +17,7 @@ def preprocess_data(handwriting_data):
     tiltXs = [d['tiltX'] for d in handwriting_data if 'tiltX' in d]
     tiltYs = [d['tiltY'] for d in handwriting_data if 'tiltY' in d]
     azimuths = [d['azimuth'] for d in handwriting_data if 'azimuth' in d]
-
+    
     # Aggregate features (e.g., mean values)
     features = [
         np.mean(speeds) if speeds else 0,
@@ -26,7 +26,6 @@ def preprocess_data(handwriting_data):
         np.mean(tiltYs) if tiltYs else 0,
         np.mean(azimuths) if azimuths else 0
     ]
-
     return np.array([features])
 
 # Route for the main page
@@ -39,15 +38,18 @@ def index():
 def submit_handwriting():
     # Get the handwriting data from the front-end
     handwriting_data = request.json
-
-    # Debug: Print the incoming data
-    print("Received handwriting data:", handwriting_data)
-
+    
     # Preprocess the data to get the features for prediction
     preprocessed_data = preprocess_data(handwriting_data)
 
+    # Debug: Log preprocessed data
+    print("Preprocessed Data:", preprocessed_data)
+
     # Make prediction using the Random Forest model
     prediction = best_rf_model.predict(preprocessed_data)
+
+    # Debug: Log the prediction result
+    print("Prediction:", prediction)
 
     # Send the prediction result back to the front-end
     return jsonify({'emotion': prediction[0]})
