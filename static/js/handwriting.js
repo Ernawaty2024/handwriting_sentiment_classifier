@@ -27,7 +27,7 @@ window.onload = function() {
             pressure: e.pressure || 0.5,  // Pressure from Apple Pencil (default 0.5 for non-pen)
             tiltX: e.tiltX || 0,          // Stylus tilt in X-axis
             tiltY: e.tiltY || 0,          // Stylus tilt in Y-axis
-            azimuth: e.azimuthAngle || 0  // Stylus azimuth angle
+            azimuth: e.azimuthAngle !== undefined ? e.azimuthAngle : 0  // Handle undefined azimuth case
         });
     };
 
@@ -60,7 +60,7 @@ window.onload = function() {
                 pressure: e.pressure || 0.5,  // Pressure from Apple Pencil
                 tiltX: e.tiltX || 0,          // Tilt in X-axis
                 tiltY: e.tiltY || 0,          // Tilt in Y-axis
-                azimuth: e.azimuthAngle || 0  // Azimuth angle
+                azimuth: e.azimuthAngle !== undefined ? e.azimuthAngle : 0  // Handle undefined azimuth case
             });
 
             // Update previous position and timestamp for the next calculation
@@ -105,6 +105,7 @@ window.onload = function() {
         })
         .catch(error => {
             console.error('Error:', error);
+            document.getElementById('predictionResult').innerText = 'Error fetching prediction';
         });
     };
 };
