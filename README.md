@@ -22,7 +22,7 @@ Handwriting can reveal crucial insights into an individual's motor skills and em
 
 
 ### Limitations:
-The limitation in the number of respondents in the Handwriting Features dataset becomes increasingly significant becuse data collection was only carried out at three locations in one district. Thus, the representativeness of this dataset over a wider variety of students from locations may be limited. It is essential to recognize that particular local or unique phenomena present at that location cannot fully reflect the diversity that may occur on a larger scale.
+The limited number of respondents in the Handwriting Features dataset is a significant concern, as data collection was conducted in only three locations within one district. Consequently, the dataset may not adequately represent a broader range of students from different areas. It's important to acknowledge that specific local or unique factors present in those locations may not fully capture the diversity that exists on a larger scale.
 
 ### Ethical Considerations:
-In our research, we prioritized careful and ethical conduct throughout the study. This research aligns with approvals from the National and Political Unity Agency and the Education Office of the Jember Regency, confirming adherence to established research ethics guidelines. The study received ethical clearance from the Institutional Review Board at education authorities. 
+The research prioritized careful and ethical conduct throughout the study. Approval was obtained from the National and Political Unity Agency and the Education Office of Jember Regency, confirming adherence to established research ethics guidelines. Ethical clearance was also granted by the Institutional Review Board of the education authorities.
