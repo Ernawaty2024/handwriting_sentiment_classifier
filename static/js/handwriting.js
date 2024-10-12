@@ -31,7 +31,8 @@ window.onload = function () {
                     y = e.pageY - canvas.offsetTop;
                 }
 
-                lineWidth = Math.log(pressure + 1) * 40;
+                // Adjusted line width to make strokes thinner
+                lineWidth = Math.log(pressure + 1) * 10;
                 context.lineWidth = lineWidth;
                 context.strokeStyle = 'black';
                 context.lineCap = 'round';
@@ -73,7 +74,7 @@ window.onload = function () {
                 }
 
                 // Smoothen line width calculation
-                lineWidth = Math.log(pressure + 1) * 2;
+                lineWidth = (Math.log(pressure + 1) * 10 * 0.2 + lineWidth * 0.8);
                 points.push({ x, y, lineWidth });
 
                 // Draw the stroke smoothly
@@ -115,7 +116,7 @@ window.onload = function () {
     document.getElementById('submitCanvas').onclick = function () {
         // Validate the form inputs for age, gender, and grade
         var age = document.getElementById('age').value;
-        var gender = document.getElementById('age').value;
+        var gender = document.getElementById('gender').value;  // Fixed incorrect field reference
         var grade = document.getElementById('grade').value;
 
         if (!age || !gender || !grade) {
