@@ -8,32 +8,44 @@
 </head>
 <body>
     <h1>Handwriting Emotion Detection</h1>
-    
-    <label for="age">Age:</label>
-    <select id="age" name="age" required>
-        <option value="" disabled selected>Select age</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-    </select>
 
-    <label for="gender">Gender:</label>
-    <select id="gender" name="gender" required>
-        <option value="" disabled selected>Select gender</option>
-        <option value="0">Male</option>
-        <option value="1">Female</option>
-    </select>
+    <div class="form-container">
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <select id="age" name="age" required>
+                <option value="" disabled selected>Select age</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+            </select>
+        </div>
 
-    <label for="grade">Grade:</label>
-    <select id="grade" name="grade" required>
-        <option value="" disabled selected>Select grade</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-    </select>
+        <div class="form-group">
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" required>
+                <option value="" disabled selected>Select gender</option>
+                <option value="0">Male</option>
+                <option value="1">Female</option>
+            </select>
+        </div>
 
-    <canvas id="handwritingCanvas"></canvas>
+        <div class="form-group">
+            <label for="grade">Grade:</label>
+            <select id="grade" name="grade" required>
+                <option value="" disabled selected>Select grade</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+        </div>
+    </div>
 
-    <button id="submitCanvas">Submit</button>
-    <button id="clearCanvas">Clear</button>
+    <div class="canvas-container">
+        <canvas id="handwritingCanvas"></canvas>
+    </div>
+
+    <div class="button-container">
+        <button id="submitCanvas">Submit</button>
+        <button id="clearCanvas">Clear</button>
+    </div>
 
     <div id="predictionResult">Prediction Result</div>
 

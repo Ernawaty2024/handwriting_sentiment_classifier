@@ -7,6 +7,15 @@ body {
     padding: 0;
 }
 
+.container {
+    width: 80%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
 h1 {
     text-align: center;
     color: #4a90e2;
@@ -14,29 +23,21 @@ h1 {
 
 label {
     font-weight: bold;
-    margin-top: 15px;
-    display: block;
-    font-size: 16px;
-}
-
-select, input[type="radio"] {
-    margin-top: 5px;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    width: 100%;
-}
-
-input[type="radio"] {
     margin-right: 10px;
+}
+
+input[type="text"], input[type="number"], select {
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
 button {
     background-color: #4a90e2;
     color: white;
     padding: 10px 20px;
-    margin: 10px 5px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -50,10 +51,24 @@ button:hover {
 #handwritingCanvas {
     border: 2px solid #4a90e2;
     margin: 20px 0;
-    display: block;
     width: 100%;
     max-width: 600px;
-    height: 500px;
+    height: 300px;
+    cursor: crosshair;
+    display: block;  /* Ensure canvas is treated as a block-level element */
+}
+
+.canvas-container {
+    display: flex;
+    justify-content: center;  /* Center the canvas horizontally */
+    align-items: center;      /* Center the canvas vertically (if needed) */
+    margin: 20px 0;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
 }
 
 #predictionResult {
@@ -63,39 +78,35 @@ button:hover {
     margin-top: 20px;
 }
 
-.container {
-    width: 90%;
-    max-width: 700px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+/* Flexbox container for the form fields */
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-button#clearCanvas {
-    background-color: #e74c3c;
-    margin-right: 10px;
+.form-group {
+    display: flex;
+    align-items: center;
+    flex-basis: 30%;
 }
 
-button#clearCanvas:hover {
-    background-color: #c0392b;
-}
-
-button#submitCanvas {
-    background-color: #27ae60;
-}
-
-button#submitCanvas:hover {
-    background-color: #2ecc71;
+/* Flexbox container for the buttons */
+.button-container {
+    display: flex;
+    justify-content: center;
 }
 
 /* Media query for mobile responsiveness */
 @media (max-width: 768px) {
-    .container {
-        padding: 10px;
+    .form-container {
+        flex-direction: column;
     }
-
+    .form-group {
+        flex-basis: 100%;
+        margin-bottom: 10px;
+    }
     button {
         width: 100%;
     }
