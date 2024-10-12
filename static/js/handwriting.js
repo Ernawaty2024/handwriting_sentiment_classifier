@@ -73,7 +73,7 @@ window.onload = function () {
                 }
 
                 // Smoothen line width calculation
-                lineWidth = Math.log(pressure + 1) * 40 * 0.2 + lineWidth * 0.8;
+                lineWidth = Math.log(pressure + 1) * 2;
                 points.push({ x, y, lineWidth });
 
                 // Draw the stroke smoothly
