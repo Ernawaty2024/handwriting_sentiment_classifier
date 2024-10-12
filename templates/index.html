@@ -3,28 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handwriting Emotion Detection</title>
+    <title>Handwriting Sentiment Classifier</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <h1>Handwriting Emotion Detection</h1>
-    
-    <label for="age">Age:</label>
-    <input type="number" id="age" name="age" min="1" max="100" required>
+    <div class="container">
+        <h1>Handwriting Sentiment Classifier</h1>
+        
+        <div class="form-container">
+            <form id="handwritingForm">
+                <div class="form-group">
+                    <label for="age">Age:</label>
+                    <select id="age" name="age" required>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
 
-    <label for="gender">Gender:</label>
-    <label><input type="radio" name="gender" value="0" required> Male</label>
-    <label><input type="radio" name="gender" value="1"> Female</label>
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="0">Boys</option>
+                        <option value="1">Girls</option>
+                    </select>
+                </div>
 
-    <label for="grade">Grade:</label>
-    <input type="number" id="grade" name="grade" min="1" max="12" required>
+                <div class="form-group">
+                    <label for="grade">Grade:</label>
+                    <select id="grade" name="grade" required>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
 
-    <canvas id="handwritingCanvas"></canvas>
+                <div class="canvas-container">
+                    <canvas id="handwritingCanvas"></canvas>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" id="clearCanvas">Clear</button>
+                    <button type="button" id="submitCanvas">Submit</button>
+                </div>
+            </form>
+        </div>
 
-    <button id="submitCanvas">Submit</button>
-    <button id="clearCanvas">Clear</button>
-
-    <div id="predictionResult">Prediction Result</div>
+        <div id="predictionResult" class="result-container">
+            <p>Prediction Result: <span id="emotionResult">N/A</span></p>
+        </div>
+    </div>
 
     <script src="/static/js/handwriting.js"></script>
 </body>
