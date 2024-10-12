@@ -57,8 +57,6 @@ def index():
 @app.route('/submit_handwriting', methods=['POST'])
 def submit_handwriting():
     try:
-        print(f"Received Data: {request.json}")
-
         # Get the handwriting data from the front-end
         data = request.json
         handwriting_data = data.get('handwriting_data')  # Use .get() to avoid KeyError
@@ -75,14 +73,10 @@ def submit_handwriting():
         # Make prediction using the Random Forest model
         prediction = best_rf_model.predict(preprocessed_data)
 
-        print(f"Preprocessed Data: {preprocessed_data}")
-        print(f"Prediction: {prediction}")
-
         # Send the prediction result back to the front-end
         return jsonify({'emotion': prediction[0]})
 
     except Exception as e:
-        print(f"Error: {e}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
