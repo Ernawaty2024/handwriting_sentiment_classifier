@@ -115,7 +115,7 @@ window.onload = function () {
     document.getElementById('submitCanvas').onclick = function () {
         // Validate the form inputs for age, gender, and grade
         var age = document.getElementById('age').value;
-        var gender = document.querySelector('input[name="gender"]:checked');
+        var gender = document.getElementById('age').value;
         var grade = document.getElementById('grade').value;
 
         if (!age || !gender || !grade) {
@@ -127,7 +127,7 @@ window.onload = function () {
         var handwritingData = JSON.stringify({
             handwriting_data: drawingData,
             age: age,
-            gender: gender.value,
+            gender: gender,
             grade: grade
         });
 
