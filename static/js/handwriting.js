@@ -3,7 +3,8 @@ window.onload = function () {
     var context = canvas.getContext('2d');
     var isDrawing = false;
     var drawingData = [];
-    var prevTimestamp, prevX, prevY;
+    var points = [];
+    var lineWidth = 0;
     var currentBox = 'bold';  // Start with bold tracing
 
     // Set canvas size
@@ -14,72 +15,93 @@ window.onload = function () {
     drawTemplate(context, canvas.width, canvas.height);
 
     // Start drawing when the pointer is pressed down (Apple Pencil supported)
-    canvas.onpointerdown = function (e) {
-        if (isInBox(e, currentBox)) {
-            isDrawing = true;
-            prevTimestamp = Date.now();
-            prevX = e.clientX - canvas.offsetLeft;
-            prevY = e.clientY - canvas.offsetTop;
-            context.beginPath();
-            context.moveTo(prevX, prevY);
-            drawingData.push({
-                x: prevX,
-                y: prevY,
-                timestamp: prevTimestamp,
-                pressure: e.pressure || 0.5,  // Pressure from Apple Pencil (default 0.5 for non-pen)
-                tiltX: e.tiltX || 0,          // Stylus tilt in X-axis
-                tiltY: e.tiltY || 0,          // Stylus tilt in Y-axis
-                azimuth: e.azimuthAngle || 0,  // Stylus azimuth angle
-                box: currentBox  // Mark the box type: bold or cursive
-            });
-        }
-    };
+    for (const ev of ["touchstart", "mousedown"]) {
+        canvas.addEventListener(ev, function (e) {
+            if (isInBox(e, currentBox)) {
+                isDrawing = true;
+                let pressure = 0.1;
+                let x, y;
+                if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
+                    pressure = e.touches[0]["force"] > 0 ? e.touches[0]["force"] : pressure;
+                    x = e.touches[0].pageX - canvas.offsetLeft;
+                    y = e.touches[0].pageY - canvas.offsetTop;
+                } else {
+                    pressure = 1.0;
+                    x = e.pageX - canvas.offsetLeft;
+                    y = e.pageY - canvas.offsetTop;
+                }
+
+                lineWidth = Math.log(pressure + 1) * 40;
+                context.lineWidth = lineWidth;
+                context.strokeStyle = 'black';
+                context.lineCap = 'round';
+                context.lineJoin = 'round';
+
+                points.push({ x, y, lineWidth });
+                context.beginPath();
+                context.moveTo(x, y);
+                drawingData.push({
+                    x: x,
+                    y: y,
+                    timestamp: Date.now(),
+                    pressure: pressure,
+                    tiltX: e.tiltX || 0,
+                    tiltY: e.tiltY || 0,
+                    azimuth: e.azimuthAngle || 0,
+                    box: currentBox
+                });
+            }
+        });
+    }
 
     // Continue drawing and capture data including speed
-    canvas.onpointermove = function (e) {
-        if (isDrawing && isInBox(e, currentBox)) {
-            var currentTimestamp = Date.now();
-            var currentX = e.clientX - canvas.offsetLeft;
-            var currentY = e.clientY - canvas.offsetTop;
+    for (const ev of ['touchmove', 'mousemove']) {
+        canvas.addEventListener(ev, function (e) {
+            if (isDrawing && isInBox(e, currentBox)) {
+                e.preventDefault();
 
-            // Calculate time difference
-            var timeDifference = (currentTimestamp - prevTimestamp) / 1000;  // Time in seconds
+                let pressure = 0.1;
+                let x, y;
+                if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
+                    pressure = e.touches[0]["force"] > 0 ? e.touches[0]["force"] : pressure;
+                    x = e.touches[0].pageX - canvas.offsetLeft;
+                    y = e.touches[0].pageY - canvas.offsetTop;
+                } else {
+                    pressure = 1.0;
+                    x = e.pageX - canvas.offsetLeft;
+                    y = e.pageY - canvas.offsetTop;
+                }
 
-            // Calculate distance traveled using Euclidean distance
-            var distance = Math.sqrt(Math.pow(currentX - prevX, 2) + Math.pow(currentY - prevY, 2));
+                // Smoothen line width calculation
+                lineWidth = Math.log(pressure + 1) * 40 * 0.2 + lineWidth * 0.8;
+                points.push({ x, y, lineWidth });
 
-            // Calculate speed (distance / time)
-            var speed = distance / timeDifference;
+                // Draw the stroke smoothly
+                drawOnCanvas(points);
 
-            // Draw the stroke
-            context.lineTo(currentX, currentY);
-            context.stroke();
-
-            // Capture drawing data with speed, pressure, tilt, and azimuth
-            drawingData.push({
-                x: currentX,
-                y: currentY,
-                timestamp: currentTimestamp,
-                speed: speed,
-                pressure: e.pressure || 0.5,  // Pressure from Apple Pencil
-                tiltX: e.tiltX || 0,          // Tilt in X-axis
-                tiltY: e.tiltY || 0,          // Tilt in Y-axis
-                azimuth: e.azimuthAngle || 0,  // Azimuth angle
-                box: currentBox  // Mark the box type: bold or cursive
-            });
-
-            // Update previous position and timestamp for the next calculation
-            prevX = currentX;
-            prevY = currentY;
-            prevTimestamp = currentTimestamp;
-        }
-    };
+                drawingData.push({
+                    x: x,
+                    y: y,
+                    timestamp: Date.now(),
+                    pressure: pressure,
+                    tiltX: e.tiltX || 0,
+                    tiltY: e.tiltY || 0,
+                    azimuth: e.azimuthAngle || 0,
+                    box: currentBox
+                });
+            }
+        });
+    }
 
     // Stop drawing when pointer is lifted
-    canvas.onpointerup = function () {
-        isDrawing = false;
-        currentBox = currentBox === 'bold' ? 'cursive' : 'bold';  // Switch to cursive after the first box
-    };
+    for (const ev of ['touchend', 'mouseup']) {
+        canvas.addEventListener(ev, function () {
+            isDrawing = false;
+            points = [];
+            // Switch to cursive box after finishing bold tracing
+            currentBox = currentBox === 'bold' ? 'cursive' : 'bold';
+        });
+    }
 
     // Clear the canvas and redraw the template
     document.getElementById('clearCanvas').onclick = function () {
@@ -93,7 +115,7 @@ window.onload = function () {
     document.getElementById('submitCanvas').onclick = function () {
         // Validate the form inputs for age, gender, and grade
         var age = document.getElementById('age').value;
-        var gender = document.getElementById('gender').value;
+        var gender = document.querySelector('input[name="gender"]:checked');
         var grade = document.getElementById('grade').value;
 
         if (!age || !gender || !grade) {
@@ -105,7 +127,7 @@ window.onload = function () {
         var handwritingData = JSON.stringify({
             handwriting_data: drawingData,
             age: age,
-            gender: gender,
+            gender: gender.value,
             grade: grade
         });
 
@@ -117,18 +139,18 @@ window.onload = function () {
             },
             body: handwritingData
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById('predictionResult').innerText = `Error: ${data.error}`;
-                } else {
-                    document.getElementById('predictionResult').innerText = `Emotion: ${data.emotion}`;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('predictionResult').innerText = 'An error occurred';
-            });
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('predictionResult').innerText = `Error: ${data.error}`;
+            } else {
+                document.getElementById('predictionResult').innerText = `Emotion: ${data.emotion}`;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('predictionResult').innerText = 'An error occurred';
+        });
     };
 
     // Helper function to check if the pointer is in the current box
@@ -143,86 +165,110 @@ window.onload = function () {
         }
         return false;
     }
-};
 
-// Function to draw the handwriting template (both Box A and Box B)
-function drawTemplate(context, width, height) {
-    const cmToPx = 37.8; // Conversion from cm to px
-    const boxWidth = 14 * cmToPx;
-    const boxHeight = 5 * cmToPx;
+    // Function to draw the handwriting template (both Box A and Box B)
+    function drawTemplate(context, width, height) {
+        const cmToPx = 37.8; // Conversion from cm to px
+        const boxWidth = 14 * cmToPx;
+        const boxHeight = 5 * cmToPx;
 
-    const boxAX = 30;
-    const boxAY = 30;
-    const boxBX = 30;
-    const boxBY = boxAY + boxHeight + 30;
+        const boxAX = 30;
+        const boxAY = 30;
+        const boxBX = 30;
+        const boxBY = boxAY + boxHeight + 30;
 
-    // Draw Box A (Bold Tracing)
-    drawBoxA(context, boxAX, boxAY, boxWidth, boxHeight, cmToPx);
+        // Draw Box A (Bold Tracing)
+        drawBoxA(context, boxAX, boxAY, boxWidth, boxHeight, cmToPx);
 
-    // Draw Box B (Cursive Tracing)
-    drawBoxB(context, boxBX, boxBY, boxWidth, boxHeight, cmToPx);
-}
+        // Draw Box B (Cursive Tracing)
+        drawBoxB(context, boxBX, boxBY, boxWidth, boxHeight, cmToPx);
+    }
 
-// Draw box A (Bold tracing)
-function drawBoxA(context, x, y, width, height, cmToPx) {
-    let lineSpacing = 0.6 * cmToPx;
-    let startY = y;
+    // Draw box A (Bold tracing)
+    function drawBoxA(context, x, y, width, height, cmToPx) {
+        let lineSpacing = 0.6 * cmToPx;
+        let startY = y;
 
-    context.strokeStyle = '#000';
-    context.lineWidth = 1;
+        context.strokeStyle = '#000';
+        context.lineWidth = 1;
 
-    // Adjust number of lines and space to properly position the text
-    for (let i = 0; i < 6; i++) {
+        // Adjust number of lines and space to properly position the text
+        for (let i = 0; i < 6; i++) {
+            context.beginPath();
+            context.moveTo(x, startY);
+            context.lineTo(x + width, startY);
+            context.stroke();
+            startY += lineSpacing;
+        }
+
+        // Bold text should sit on the 4th line
+        context.font = '50px Dancing Script';
+        context.textBaseline = 'alphabetic';
+        context.fillText('Angin bertiup kencang', x + 10, y + 3.5 * lineSpacing - 10);  // Adjusted to 4th line
+    }
+
+    // Draw box B (Cursive tracing)
+    function drawBoxB(context, x, y, width, height, cmToPx) {
+        let topLine = 1.2 * cmToPx;
+        let midLine = 0.6 * cmToPx;
+        let bottomLine = 1.2 * cmToPx;
+        let startY = y;
+
+        context.strokeStyle = '#000';
+        context.lineWidth = 1;
+
         context.beginPath();
         context.moveTo(x, startY);
         context.lineTo(x + width, startY);
         context.stroke();
-        startY += lineSpacing;
+
+        startY += topLine;
+        context.beginPath();
+        context.moveTo(x, startY);
+        context.lineTo(x + width, startY);
+        context.stroke();
+
+        startY += midLine;
+        context.beginPath();
+        context.moveTo(x, startY);
+        context.lineTo(x + width, startY);
+        context.stroke();
+
+        startY += bottomLine;
+        context.beginPath();
+        context.moveTo(x, startY);
+        context.lineTo(x + width, startY);
+        context.stroke();
+
+        // Adjust dotted cursive text to be properly aligned with the lines
+        context.font = '50px Dancing Script';
+        context.textBaseline = 'alphabetic';
+        context.setLineDash([5, 5]);
+        context.strokeText('Angin bertiup kencang', x + 14, y + topLine + midLine - 2.5);  // Adjusted to sit closer to the second line from the bottom
+        context.setLineDash([]);
     }
 
-    // Bold text should sit on the 4th line
-    context.font = '50px Dancing Script';
-    context.textBaseline = 'alphabetic';
-    context.fillText('Angin bertiup kencang', x + 10, y + 3.5 * lineSpacing - 10);  // Adjusted to 4th line
-}
+    // Function to draw on the canvas with smoothing
+    function drawOnCanvas(stroke) {
+        context.strokeStyle = 'black';
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
 
-// Draw box B (Cursive tracing)
-function drawBoxB(context, x, y, width, height, cmToPx) {
-    let topLine = 1.2 * cmToPx;
-    let midLine = 0.6 * cmToPx;
-    let bottomLine = 1.2 * cmToPx;
-    let startY = y;
-
-    context.strokeStyle = '#000';
-    context.lineWidth = 1;
-
-    context.beginPath();
-    context.moveTo(x, startY);
-    context.lineTo(x + width, startY);
-    context.stroke();
-
-    startY += topLine;
-    context.beginPath();
-    context.moveTo(x, startY);
-    context.lineTo(x + width, startY);
-    context.stroke();
-
-    startY += midLine;
-    context.beginPath();
-    context.moveTo(x, startY);
-    context.lineTo(x + width, startY);
-    context.stroke();
-
-    startY += bottomLine;
-    context.beginPath();
-    context.moveTo(x, startY);
-    context.lineTo(x + width, startY);
-    context.stroke();
-
-    // Adjust dotted cursive text to be properly aligned with the lines
-    context.font = '50px Dancing Script';
-    context.textBaseline = 'alphabetic';
-    context.setLineDash([5, 5]);
-    context.strokeText('Angin bertiup kencang', x + 14, y + topLine + midLine - 2.5);  // Adjusted to sit closer to the second line from the bottom
-    context.setLineDash([]);
-}
+        const l = stroke.length - 1;
+        if (stroke.length >= 3) {
+            const xc = (stroke[l].x + stroke[l - 1].x) / 2;
+            const yc = (stroke[l].y + stroke[l - 1].y) / 2;
+            context.lineWidth = stroke[l - 1].lineWidth;
+            context.quadraticCurveTo(stroke[l - 1].x, stroke[l - 1].y, xc, yc);
+            context.stroke();
+            context.beginPath();
+            context.moveTo(xc, yc);
+        } else {
+            const point = stroke[l];
+            context.lineWidth = point.lineWidth;
+            context.beginPath();
+            context.moveTo(point.x, point.y);
+            context.stroke();
+        }
+    }
+};
