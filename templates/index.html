@@ -3,60 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handwriting Data Collection</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600&display=swap');
-
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        .canvas-box {
-            border: 1px solid #000;
-            display: inline-block;
-            margin-bottom: 20px;  /* Space between canvas and buttons */
-        }
-        button {
-            margin: 10px; /* Adds space between the buttons */
-            padding: 10px 20px;
-            background-color: #333;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #555;
-        }
-        #capturedData, #predictionResult {
-            margin-top: 20px;
-            text-align: left;
-            white-space: pre-wrap; /* Display JSON data properly */
-        }
-    </style>
+    <title>Handwriting Sentiment Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Handwriting Data Collection</h1>
-    <h2>Write on the Canvas</h2>
-    <p>Trace over the solid and dotted text to simulate handwriting</p>
-    <p>Only use iPad and Apple Pencil</p>
+    <h1>Handwriting Sentiment Classifier</h1>
 
-    <div class="canvas-box">
-        <canvas id="handwritingCanvas" width="600" height="300"></canvas>
-    </div>
-    
-    <!-- Adjusted: Buttons are moved below the canvas and spaced out -->
+    <!-- User Input Form -->
     <div>
-        <button id="clearCanvas">Clear</button>
-        <button id="submitCanvas">Submit Handwriting</button>
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age"><br>
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender">
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+        </select><br>
+
+        <label for="grade">Grade:</label>
+        <input type="number" id="grade" name="grade"><br>
     </div>
 
-    <!-- Divs for displaying captured data and prediction -->
-    <h3>Captured Data</h3>
-    <pre id="capturedData"></pre> <!-- Displays the captured handwriting data -->
+    <!-- Canvas for handwriting input -->
+    <canvas id="handwritingCanvas" width="600" height="300"></canvas><br>
+    <button id="clearCanvas">Clear</button>
+    <button id="submitCanvas">Submit</button>
 
-    <h3>Prediction Result</h3>
-    <p id="predictionResult"></p> <!-- Displays the prediction result -->
+    <!-- Result display -->
+    <div id="predictionResult"></div>
 
     <script src="{{ url_for('static', filename='js/handwriting.js') }}"></script>
 </body>

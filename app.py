@@ -5,23 +5,18 @@ import numpy as np
 app = Flask(__name__)
 
 # Load the trained Random Forest model
-try:
-    with open('optimized_rf_model.joblib', 'rb') as model_file:
-        best_rf_model = joblib.load(model_file)
-    print("Model loaded successfully!")
-except Exception as e:
-    print(f"Error loading model: {e}")
+with open('optimized_rf_model.joblib', 'rb') as model_file:
+    best_rf_model = joblib.load(model_file)
 
 # Function to preprocess the handwriting data
 def preprocess_data(handwriting_data):
-    # Handle cases where speed, pressure, etc., may be None
-    speeds = [d['speed'] for d in handwriting_data if 'speed' in d and d['speed'] is not None]
-    pressures = [d['pressure'] for d in handwriting_data if 'pressure' in d and d['pressure'] is not None]
-    tiltXs = [d['tiltX'] for d in handwriting_data if 'tiltX' in d and d['tiltX'] is not None]
-    tiltYs = [d['tiltY'] for d in handwriting_data if 'tiltY' in d and d['tiltY'] is not None]
-    azimuths = [d['azimuth'] for d in handwriting_data if 'azimuth' in d and d['azimuth'] is not None]
+    speeds = [d['speed'] for d in handwriting_data if 'speed' in d]
+    pressures = [d['pressure'] for d in handwriting_data if 'pressure' in d]
+    tiltXs = [d['tiltX'] for d in handwriting_data if 'tiltX' in d]
+    tiltYs = [d['tiltY'] for d in handwriting_data if 'tiltY' in d]
+    azimuths = [d['azimuth'] for d in handwriting_data if 'azimuth' in d]
 
-    # Aggregate features (e.g., mean values)
+    # Aggregated features
     features = [
         np.mean(speeds) if speeds else 0,
         np.mean(pressures) if pressures else 0,
@@ -29,10 +24,7 @@ def preprocess_data(handwriting_data):
         np.mean(tiltYs) if tiltYs else 0,
         np.mean(azimuths) if azimuths else 0
     ]
-
-    # Return the features as a numpy array
     return np.array([features])
-
 
 # Route for the main page
 @app.route('/')
@@ -42,30 +34,27 @@ def index():
 # Route for handling handwriting submission and making predictions
 @app.route('/submit_handwriting', methods=['POST'])
 def submit_handwriting():
-    try:
-        # Get the handwriting data from the front-end
-        handwriting_data = request.json
-        print(f"Received handwriting data: {handwriting_data}")
-        
-        # Check if the data is received correctly
-        if handwriting_data is None:
-            return jsonify({'error': 'No data received'}), 400
-        
-        # Preprocess the data to get the features for prediction
-        preprocessed_data = preprocess_data(handwriting_data)
-        
-        # Make prediction using the Random Forest model
-        prediction = best_rf_model.predict(preprocessed_data)
-        
-        # Log the prediction result to check if it works correctly
-        print(f"Prediction: {prediction}")
+    data = request.json
+    age = int(data['age'])
+    gender = data['gender']
+    grade = int(data['grade'])
+    handwriting_data = data['drawingData']
 
-        # Return the prediction result as JSON
-        return jsonify({'emotion': prediction[0]})
+    # Preprocess the handwriting data
+    preprocessed_data = preprocess_data(handwriting_data)
+
+    # Append the additional features (age, gender, grade)
+    gender_numeric = 1 if gender == 'M' else 0
+    additional_features = np.array([[age, gender_numeric, grade]])
+
+    # Combine with handwriting data
+    final_data = np.hstack((additional_features, preprocessed_data))
+
+    # Make the prediction
+    prediction = best_rf_model.predict(final_data)
     
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({'error': str(e)}), 500
+    # Send the prediction result back to the front-end
+    return jsonify({'emotion': prediction[0]})
 
 if __name__ == '__main__':
     app.run(debug=True)
