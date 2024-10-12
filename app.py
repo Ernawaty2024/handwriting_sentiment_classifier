@@ -9,21 +9,45 @@ with open('optimized_rf_model.joblib', 'rb') as model_file:
     best_rf_model = joblib.load(model_file)
 
 # Function to preprocess the handwriting data
-def preprocess_data(handwriting_data):
-    speeds = [d['speed'] for d in handwriting_data if 'speed' in d]
-    pressures = [d['pressure'] for d in handwriting_data if 'pressure' in d]
-    tiltXs = [d['tiltX'] for d in handwriting_data if 'tiltX' in d]
-    tiltYs = [d['tiltY'] for d in handwriting_data if 'tiltY' in d]
-    azimuths = [d['azimuth'] for d in handwriting_data if 'azimuth' in d]
+def preprocess_data(handwriting_data, age, gender, grade):
+    # Extract features from the handwriting data
+    speeds_b = [d['speed'] for d in handwriting_data if 'bold' in d and 'speed' in d]
+    pressures_b = [d['pressure'] for d in handwriting_data if 'bold' in d and 'pressure' in d]
+    tiltXs_b = [d['tiltX'] for d in handwriting_data if 'bold' in d and 'tiltX' in d]
+    tiltYs_b = [d['tiltY'] for d in handwriting_data if 'bold' in d and 'tiltY' in d]
+    azimuths_b = [d['azimuth'] for d in handwriting_data if 'bold' in d and 'azimuth' in d]
+    strokes_b = len(speeds_b)
+    modulus_altitude_b = np.std(tiltYs_b)
 
-    # Aggregated features
+    speeds_c = [d['speed'] for d in handwriting_data if 'cursive' in d and 'speed' in d]
+    pressures_c = [d['pressure'] for d in handwriting_data if 'cursive' in d and 'pressure' in d]
+    tiltXs_c = [d['tiltX'] for d in handwriting_data if 'cursive' in d and 'tiltX' in d]
+    tiltYs_c = [d['tiltY'] for d in handwriting_data if 'cursive' in d and 'tiltY' in d]
+    azimuths_c = [d['azimuth'] for d in handwriting_data if 'cursive' in d and 'azimuth' in d]
+    strokes_c = len(speeds_c)
+    modulus_altitude_c = np.std(tiltYs_c)
+
+    # Aggregate features (e.g., mean values)
     features = [
-        np.mean(speeds) if speeds else 0,
-        np.mean(pressures) if pressures else 0,
-        np.mean(tiltXs) if tiltXs else 0,
-        np.mean(tiltYs) if tiltYs else 0,
-        np.mean(azimuths) if azimuths else 0
+        age,               # Age as an input
+        gender,            # Gender: 0 (boy), 1 (girl)
+        grade,             # Grade
+        np.mean(speeds_c) if speeds_c else 0,  # Speed_C
+        strokes_c,         # Number Stroke_C
+        np.mean(pressures_c) if pressures_c else 0,  # Mean Pressure_C
+        np.mean(tiltYs_c) if tiltYs_c else 0,        # Mean Altitude_C
+        modulus_altitude_c,                          # Modulus Altitude_C
+        np.mean(azimuths_c) if azimuths_c else 0,    # Mean Azimuth_C
+        np.std(azimuths_c) if azimuths_c else 0,     # Modulus Azimuth_C
+        np.mean(speeds_b) if speeds_b else 0,        # Speed_B
+        strokes_b,                                   # Number Stroke_B
+        np.mean(pressures_b) if pressures_b else 0,  # Mean Pressure_B
+        np.mean(tiltYs_b) if tiltYs_b else 0,        # Mean Altitude_B
+        modulus_altitude_b,                          # Modulus Altitude_B
+        np.mean(azimuths_b) if azimuths_b else 0,    # Mean Azimuth_B
+        np.std(azimuths_b) if azimuths_b else 0      # Modulus Azimuth_B
     ]
+    # Return the features as a numpy array
     return np.array([features])
 
 # Route for the main page
@@ -34,25 +58,18 @@ def index():
 # Route for handling handwriting submission and making predictions
 @app.route('/submit_handwriting', methods=['POST'])
 def submit_handwriting():
-    data = request.json
-    age = int(data['age'])
-    gender = data['gender']
-    grade = int(data['grade'])
-    handwriting_data = data['drawingData']
+    # Get the handwriting data from the front-end
+    handwriting_data = request.json['handwriting_data']
+    age = request.json['age']
+    gender = request.json['gender']
+    grade = request.json['grade']
 
-    # Preprocess the handwriting data
-    preprocessed_data = preprocess_data(handwriting_data)
+    # Preprocess the data to get the features for prediction
+    preprocessed_data = preprocess_data(handwriting_data, age, gender, grade)
 
-    # Append the additional features (age, gender, grade)
-    gender_numeric = 1 if gender == 'M' else 0
-    additional_features = np.array([[age, gender_numeric, grade]])
+    # Make prediction using the Random Forest model
+    prediction = best_rf_model.predict(preprocessed_data)
 
-    # Combine with handwriting data
-    final_data = np.hstack((additional_features, preprocessed_data))
-
-    # Make the prediction
-    prediction = best_rf_model.predict(final_data)
-    
     # Send the prediction result back to the front-end
     return jsonify({'emotion': prediction[0]})
 

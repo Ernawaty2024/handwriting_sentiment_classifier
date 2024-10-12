@@ -1,27 +1,139 @@
-body {
+/* General Reset */
+body, html {
+    margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* Main Container Styling */
+.container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Title Styling */
+h1, h2 {
     text-align: center;
-    margin-top: 50px;
+    color: #333;
 }
 
-.canvas-box {
-    border: 1px solid #000;
-    display: inline-block;
+/* Form Section Styling */
+form {
+    margin-bottom: 20px;
 }
 
-canvas {
-    background-color: #f8f8f8;
+.label-input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.label-input-group label {
+    width: 100px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.label-input-group input,
+.label-input-group select {
+    width: 200px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Handwriting Canvas Styling */
+#handwritingCanvas {
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    cursor: crosshair;
+    display: block;
+    margin: 20px auto;
+}
+
+/* Button Styling */
+.button-container {
+    text-align: center;
+    margin-top: 20px;
 }
 
 button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #333;
-    color: white;
+    background-color: #007bff;
+    color: #fff;
     border: none;
+    padding: 12px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px;
+    border-radius: 8px;
     cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 button:hover {
-    background-color: #555;
+    background-color: #0056b3;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Prediction Result Styling */
+#predictionResult {
+    margin-top: 20px;
+    padding: 15px;
+    font-size: 18px;
+    text-align: center;
+    color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 8px;
+    background-color: #e6f0ff;
+}
+
+/* Clear Button Styling */
+button.clear {
+    background-color: #dc3545;
+}
+
+button.clear:hover {
+    background-color: #b52a37;
+}
+
+button.clear:active {
+    transform: scale(0.98);
+}
+
+/* Media Query for Mobile */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+
+    #handwritingCanvas {
+        width: 100%;
+    }
+
+    .label-input-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .label-input-group label,
+    .label-input-group input,
+    .label-input-group select {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    button {
+        width: 100%;
+    }
 }
