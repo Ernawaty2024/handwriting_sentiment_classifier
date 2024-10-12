@@ -3,32 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handwriting Sentiment Classifier</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Handwriting Emotion Detection</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <h1>Handwriting Sentiment Classifier</h1>
+    <h1>Handwriting Emotion Detection</h1>
+    
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age" min="1" max="100" required>
 
-    <div>
-        <label for="age">Age:</label>
-        <input type="number" id="age" name="age">
+    <label for="gender">Gender:</label>
+    <label><input type="radio" name="gender" value="0" required> Male</label>
+    <label><input type="radio" name="gender" value="1"> Female</label>
 
-        <label for="gender">Gender:</label>
-        <select id="gender" name="gender">
-            <option value="0">Boy</option>
-            <option value="1">Girl</option>
-        </select>
-
-        <label for="grade">Grade:</label>
-        <input type="number" id="grade" name="grade">
-    </div>
+    <label for="grade">Grade:</label>
+    <input type="number" id="grade" name="grade" min="1" max="12" required>
 
     <canvas id="handwritingCanvas"></canvas>
-    <button id="clearCanvas">Clear</button>
+
     <button id="submitCanvas">Submit</button>
+    <button id="clearCanvas">Clear</button>
 
-    <h2 id="predictionResult">Prediction Result</h2>
+    <div id="predictionResult">Prediction Result</div>
 
-    <script src="{{ url_for('static', filename='js/handwriting.js') }}"></script>
+    <script src="/static/js/handwriting.js"></script>
 </body>
 </html>

@@ -1,136 +1,114 @@
-/* General Reset */
-body, html {
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
 }
 
-/* Main Container Styling */
 .container {
     width: 80%;
-    margin: 20px auto;
+    margin: 50px auto;
     padding: 20px;
-    background-color: #ffffff;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
 
-/* Title Styling */
-h1, h2 {
+h1 {
     text-align: center;
-    color: #333;
+    color: #4a90e2;
 }
 
-/* Form Section Styling */
-form {
-    margin-bottom: 20px;
-}
-
-.label-input-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.label-input-group label {
-    width: 100px;
+label {
     font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type="radio"] {
     margin-right: 10px;
 }
 
-.label-input-group input,
-.label-input-group select {
-    width: 200px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-/* Handwriting Canvas Styling */
-#handwritingCanvas {
-    border: 2px solid #007bff;
-    border-radius: 8px;
-    cursor: crosshair;
-    display: block;
-    margin: 20px auto;
-}
-
-/* Button Styling */
-.button-container {
-    text-align: center;
-    margin-top: 20px;
-}
-
 button {
-    background-color: #007bff;
-    color: #fff;
+    background-color: #4a90e2;
+    color: white;
+    padding: 10px 20px;
+    margin-top: 20px;
     border: none;
-    padding: 12px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 10px;
-    border-radius: 8px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    font-size: 16px;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #357ABD;
 }
 
-button:active {
-    transform: scale(0.98);
+#handwritingCanvas {
+    border: 2px solid #4a90e2;
+    margin: 20px 0;
+    display: block;
+    width: 100%;
+    max-width: 600px;
+    height: 300px;
+    cursor: crosshair;
 }
 
-/* Prediction Result Styling */
+/* Flexbox container for the form fields */
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.form-container > div {
+    flex-basis: 30%;
+    margin-bottom: 20px;
+}
+
 #predictionResult {
-    margin-top: 20px;
-    padding: 15px;
-    font-size: 18px;
     text-align: center;
-    color: #007bff;
-    border: 1px solid #007bff;
-    border-radius: 8px;
-    background-color: #e6f0ff;
+    font-size: 18px;
+    color: #333;
+    margin-top: 20px;
 }
 
-/* Clear Button Styling */
-button.clear {
-    background-color: #dc3545;
+#clearCanvas {
+    background-color: #e74c3c;
+    margin-right: 15px;
 }
 
-button.clear:hover {
-    background-color: #b52a37;
+#clearCanvas:hover {
+    background-color: #c0392b;
 }
 
-button.clear:active {
-    transform: scale(0.98);
+#submitCanvas {
+    background-color: #27ae60;
 }
 
-/* Media Query for Mobile */
+#submitCanvas:hover {
+    background-color: #2ecc71;
+}
+
+/* Media query for mobile responsiveness */
 @media (max-width: 768px) {
-    .container {
-        width: 95%;
-    }
-
-    #handwritingCanvas {
-        width: 100%;
-    }
-
-    .label-input-group {
+    .form-container {
         flex-direction: column;
-        align-items: flex-start;
     }
 
-    .label-input-group label,
-    .label-input-group input,
-    .label-input-group select {
-        width: 100%;
-        margin-bottom: 5px;
+    .form-container > div {
+        flex-basis: 100%;
     }
 
     button {

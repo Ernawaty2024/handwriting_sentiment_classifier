@@ -59,10 +59,13 @@ def submit_handwriting():
     try:
         # Get the handwriting data from the front-end
         data = request.json
-        handwriting_data = data['handwriting_data']
+        handwriting_data = data.get('handwriting_data')  # Use .get() to avoid KeyError
         age = int(data['age'])
         gender = int(data['gender'])
         grade = int(data['grade'])
+
+        if handwriting_data is None:
+            return jsonify({'error': 'No handwriting data provided'}), 400
 
         # Preprocess the data to get the features for prediction
         preprocessed_data = preprocess_data(handwriting_data, age, gender, grade)
@@ -74,7 +77,7 @@ def submit_handwriting():
         return jsonify({'emotion': prediction[0]})
 
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

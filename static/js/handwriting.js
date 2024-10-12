@@ -4,7 +4,7 @@ window.onload = function() {
     var isDrawing = false;
     var drawingData = [];
     var prevTimestamp, prevX, prevY;
-    var currentBox = "bold";  // Switch between bold and cursive
+    var currentBox = 'bold';  // Start with bold tracing
 
     // Set canvas size
     canvas.width = 600;
@@ -22,14 +22,14 @@ window.onload = function() {
         context.beginPath();
         context.moveTo(prevX, prevY);
         drawingData.push({
-            box: currentBox,
             x: prevX,
             y: prevY,
             timestamp: prevTimestamp,
             pressure: e.pressure || 0.5,  // Pressure from Apple Pencil (default 0.5 for non-pen)
             tiltX: e.tiltX || 0,          // Stylus tilt in X-axis
             tiltY: e.tiltY || 0,          // Stylus tilt in Y-axis
-            azimuth: e.azimuthAngle || 0  // Stylus azimuth angle
+            azimuth: e.azimuthAngle || 0,  // Stylus azimuth angle
+            box: currentBox  // Mark the box type: bold or cursive
         });
     };
 
@@ -55,7 +55,6 @@ window.onload = function() {
 
             // Capture drawing data with speed, pressure, tilt, and azimuth
             drawingData.push({
-                box: currentBox,
                 x: currentX,
                 y: currentY,
                 timestamp: currentTimestamp,
@@ -63,7 +62,8 @@ window.onload = function() {
                 pressure: e.pressure || 0.5,  // Pressure from Apple Pencil
                 tiltX: e.tiltX || 0,          // Tilt in X-axis
                 tiltY: e.tiltY || 0,          // Tilt in Y-axis
-                azimuth: e.azimuthAngle || 0  // Azimuth angle
+                azimuth: e.azimuthAngle || 0,  // Azimuth angle
+                box: currentBox  // Mark the box type: bold or cursive
             });
 
             // Update previous position and timestamp for the next calculation
@@ -76,6 +76,7 @@ window.onload = function() {
     // Stop drawing when pointer is lifted
     canvas.onpointerup = function() {
         isDrawing = false;
+        currentBox = currentBox === 'bold' ? 'cursive' : 'bold';  // Switch to cursive after the first box
     };
 
     // Clear the canvas and redraw the template
@@ -83,23 +84,28 @@ window.onload = function() {
         context.clearRect(0, 0, canvas.width, canvas.height);
         drawTemplate(context, canvas.width, canvas.height);  // Redraw the template
         drawingData = [];  // Clear drawing data
-        currentBox = "bold";  // Reset to bold
+        currentBox = 'bold';  // Reset to bold
     };
 
     // Submit handwriting data
     document.getElementById('submitCanvas').onclick = function() {
-        // Get age, gender, and grade inputs
+        // Validate the form inputs for age, gender, and grade
         var age = document.getElementById('age').value;
-        var gender = document.getElementById('gender').value;
+        var gender = document.querySelector('input[name="gender"]:checked');
         var grade = document.getElementById('grade').value;
 
+        if (!age || !gender || !grade) {
+            alert('Please fill out age, gender, and grade.');
+            return;
+        }
+
         // Prepare the handwriting data to send to the server
-        var handwritingData = {
+        var handwritingData = JSON.stringify({
+            handwriting_data: drawingData,
             age: age,
-            gender: gender,
-            grade: grade,
-            handwriting_data: drawingData
-        };
+            gender: gender.value,
+            grade: grade
+        });
 
         // Send the data via fetch API to the back-end
         fetch('/submit_handwriting', {
@@ -107,20 +113,26 @@ window.onload = function() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(handwritingData)  // Ensure correct payload
+            body: handwritingData
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('predictionResult').innerText = `Emotion: ${data.emotion}`;
+            if (data.error) {
+                document.getElementById('predictionResult').innerText = `Error: ${data.error}`;
+            } else {
+                document.getElementById('predictionResult').innerText = `Emotion: ${data.emotion}`;
+            }
         })
         .catch(error => {
             console.error('Error:', error);
+            document.getElementById('predictionResult').innerText = 'An error occurred';
         });
     };
 };
 
 // Function to draw the handwriting template
 function drawTemplate(context, width, height) {
+    // Define line spacing and text for template
     const topLineY = 80;
     const middleLineY = 140;
     const bottomLineY = 200;
@@ -128,6 +140,7 @@ function drawTemplate(context, width, height) {
     context.strokeStyle = '#000';  // Black for predefined lines
     context.lineWidth = 1;
 
+    // Draw horizontal lines for writing guidance
     context.beginPath();
     context.moveTo(30, topLineY);
     context.lineTo(width - 30, topLineY);
@@ -141,10 +154,13 @@ function drawTemplate(context, width, height) {
     context.lineTo(width - 30, bottomLineY);
     context.stroke();
 
+    // Draw example cursive text in the middle line (solid)
     context.font = '30px Dancing Script';
     context.fillText('Ants build kingdoms', 40, middleLineY - 10);
 
-    context.setLineDash([5, 5]);
+    // Draw dotted version of the text as a tracing guide
+    context.setLineDash([5, 5]);  // Set dash pattern for dotted line
     context.strokeText('Ants build kingdoms', 40, bottomLineY - 10);
-    context.setLineDash([]);
+
+    context.setLineDash([]);  // Reset dash to default (solid line)
 }
