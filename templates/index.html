@@ -8,22 +8,27 @@
 </head>
 <body>
     <h1>Handwriting Sentiment Classifier</h1>
-    
-    <label for="age">Age (Years):</label>
-    <input type="number" id="age" min="0" max="100"><br><br>
 
-    <label for="gender">Gender (0: Boys, 1: Girls):</label>
-    <input type="number" id="gender" min="0" max="1"><br><br>
+    <form id="inputForm">
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" min="6" max="18" required><br><br>
 
-    <label for="grade">Grade:</label>
-    <input type="number" id="grade" min="1" max="12"><br><br>
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender">
+            <option value="0">Boy</option>
+            <option value="1">Girl</option>
+        </select><br><br>
 
-    <canvas id="handwritingCanvas" style="border:1px solid #000;"></canvas><br>
-    
-    <button id="clearCanvas">Clear</button>
-    <button id="submitCanvas">Submit</button>
+        <label for="grade">Grade:</label>
+        <input type="number" id="grade" name="grade" min="1" max="12" required><br><br>
 
-    <div id="predictionResult"></div>
+        <canvas id="handwritingCanvas" style="border:1px solid #000;"></canvas><br><br>
+
+        <button type="button" id="clearCanvas">Clear Canvas</button>
+        <button type="button" id="submitCanvas">Submit Handwriting</button>
+    </form>
+
+    <p id="predictionResult">Prediction Result: </p>
 
     <script src="{{ url_for('static', filename='js/handwriting.js') }}"></script>
 </body>
