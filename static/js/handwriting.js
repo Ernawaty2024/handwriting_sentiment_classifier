@@ -78,6 +78,7 @@ window.onload = function () {
     // Stop drawing when pointer is lifted
     canvas.onpointerup = function () {
         isDrawing = false;
+        currentBox = currentBox === 'bold' ? 'cursive' : 'bold';  // Switch to cursive after the first box
     };
 
     // Clear the canvas and redraw the template
@@ -92,7 +93,7 @@ window.onload = function () {
     document.getElementById('submitCanvas').onclick = function () {
         // Validate the form inputs for age, gender, and grade
         var age = document.getElementById('age').value;
-        var gender = document.querySelector('input[name="gender"]:checked');
+        var gender = document.getElementById('gender').value;
         var grade = document.getElementById('grade').value;
 
         if (!age || !gender || !grade) {
@@ -104,7 +105,7 @@ window.onload = function () {
         var handwritingData = JSON.stringify({
             handwriting_data: drawingData,
             age: age,
-            gender: gender.value,
+            gender: gender,
             grade: grade
         });
 
@@ -222,6 +223,6 @@ function drawBoxB(context, x, y, width, height, cmToPx) {
     context.font = '50px Dancing Script';
     context.textBaseline = 'alphabetic';
     context.setLineDash([5, 5]);
-    context.strokeText('Angin bertiup kencang', x + 15, y + topLine + midLine - 3);  // Adjusted to sit closer to the second line from the bottom
+    context.strokeText('Angin bertiup kencang', x + 14, y + topLine + midLine - 2.5);  // Adjusted to sit closer to the second line from the bottom
     context.setLineDash([]);
 }

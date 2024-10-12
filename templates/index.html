@@ -17,8 +17,11 @@
     </select>
 
     <label for="gender">Gender:</label>
-    <label><input type="radio" name="gender" value="0" required> Male</label>
-    <label><input type="radio" name="gender" value="1"> Female</label>
+    <select id="gender" name="gender" required>
+        <option value="" disabled selected>Select gender</option>
+        <option value="0">Male</option>
+        <option value="1">Female</option>
+    </select>
 
     <label for="grade">Grade:</label>
     <select id="grade" name="grade" required>
