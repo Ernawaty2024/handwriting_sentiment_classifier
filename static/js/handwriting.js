@@ -31,8 +31,7 @@ window.onload = function () {
                     y = e.pageY - canvas.offsetTop;
                 }
 
-                // Adjusted line width to make strokes thinner
-                lineWidth = Math.log(pressure + 1) * 10;
+                lineWidth = Math.log(pressure + 1) * 10;  // Thinner strokes
                 context.lineWidth = lineWidth;
                 context.strokeStyle = 'black';
                 context.lineCap = 'round';
@@ -74,7 +73,7 @@ window.onload = function () {
                 }
 
                 // Smoothen line width calculation
-                lineWidth = (Math.log(pressure + 1) * 10 * 0.2 + lineWidth * 0.8);
+                lineWidth = (Math.log(pressure + 1) * 2);
                 points.push({ x, y, lineWidth });
 
                 // Draw the stroke smoothly
@@ -124,6 +123,9 @@ window.onload = function () {
             return;
         }
 
+        // Log the handwriting data for debugging purposes
+        console.log("Handwriting Data:", drawingData);
+
         // Prepare the handwriting data to send to the server
         var handwritingData = JSON.stringify({
             handwriting_data: drawingData,
@@ -142,6 +144,7 @@ window.onload = function () {
         })
         .then(response => response.json())
         .then(data => {
+            console.log("Server Response:", data);  // Log the server response
             if (data.error) {
                 document.getElementById('predictionResult').innerText = `Error: ${data.error}`;
             } else {
@@ -149,7 +152,7 @@ window.onload = function () {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error:', error);  // Log any errors encountered
             document.getElementById('predictionResult').innerText = 'An error occurred';
         });
     };
@@ -273,3 +276,4 @@ window.onload = function () {
         }
     }
 };
+
