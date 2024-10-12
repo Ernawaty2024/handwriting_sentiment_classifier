@@ -4,7 +4,7 @@ window.onload = function() {
     var isDrawing = false;
     var drawingData = [];
     var prevTimestamp, prevX, prevY;
-    var currentBox = 'bold'; // Track whether user is drawing in bold or cursive box
+    var currentBox = "bold";  // Switch between bold and cursive
 
     // Set canvas size
     canvas.width = 600;
@@ -22,14 +22,14 @@ window.onload = function() {
         context.beginPath();
         context.moveTo(prevX, prevY);
         drawingData.push({
+            box: currentBox,
             x: prevX,
             y: prevY,
             timestamp: prevTimestamp,
             pressure: e.pressure || 0.5,  // Pressure from Apple Pencil (default 0.5 for non-pen)
             tiltX: e.tiltX || 0,          // Stylus tilt in X-axis
             tiltY: e.tiltY || 0,          // Stylus tilt in Y-axis
-            azimuth: e.azimuthAngle || 0, // Stylus azimuth angle
-            box: currentBox               // Track which box is being drawn in
+            azimuth: e.azimuthAngle || 0  // Stylus azimuth angle
         });
     };
 
@@ -55,6 +55,7 @@ window.onload = function() {
 
             // Capture drawing data with speed, pressure, tilt, and azimuth
             drawingData.push({
+                box: currentBox,
                 x: currentX,
                 y: currentY,
                 timestamp: currentTimestamp,
@@ -62,8 +63,7 @@ window.onload = function() {
                 pressure: e.pressure || 0.5,  // Pressure from Apple Pencil
                 tiltX: e.tiltX || 0,          // Tilt in X-axis
                 tiltY: e.tiltY || 0,          // Tilt in Y-axis
-                azimuth: e.azimuthAngle || 0, // Azimuth angle
-                box: currentBox               // Track which box is being drawn in (bold/cursive)
+                azimuth: e.azimuthAngle || 0  // Azimuth angle
             });
 
             // Update previous position and timestamp for the next calculation
@@ -83,22 +83,23 @@ window.onload = function() {
         context.clearRect(0, 0, canvas.width, canvas.height);
         drawTemplate(context, canvas.width, canvas.height);  // Redraw the template
         drawingData = [];  // Clear drawing data
-        currentBox = 'bold';  // Reset box to bold
+        currentBox = "bold";  // Reset to bold
     };
 
     // Submit handwriting data
     document.getElementById('submitCanvas').onclick = function() {
+        // Get age, gender, and grade inputs
         var age = document.getElementById('age').value;
         var gender = document.getElementById('gender').value;
         var grade = document.getElementById('grade').value;
 
         // Prepare the handwriting data to send to the server
-        var handwritingData = JSON.stringify({
-            handwriting_data: drawingData,
+        var handwritingData = {
             age: age,
             gender: gender,
-            grade: grade
-        });
+            grade: grade,
+            handwriting_data: drawingData
+        };
 
         // Send the data via fetch API to the back-end
         fetch('/submit_handwriting', {
@@ -106,15 +107,14 @@ window.onload = function() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: handwritingData
+            body: JSON.stringify(handwritingData)  // Ensure correct payload
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('predictionResult').innerText = `Prediction Result: ${data.emotion}`;
+            document.getElementById('predictionResult').innerText = `Emotion: ${data.emotion}`;
         })
         .catch(error => {
             console.error('Error:', error);
-            document.getElementById('predictionResult').innerText = `Error: ${error}`;
         });
     };
 };
@@ -124,11 +124,10 @@ function drawTemplate(context, width, height) {
     const topLineY = 80;
     const middleLineY = 140;
     const bottomLineY = 200;
-
+    
     context.strokeStyle = '#000';  // Black for predefined lines
     context.lineWidth = 1;
 
-    // Draw horizontal lines for writing guidance
     context.beginPath();
     context.moveTo(30, topLineY);
     context.lineTo(width - 30, topLineY);
@@ -142,13 +141,10 @@ function drawTemplate(context, width, height) {
     context.lineTo(width - 30, bottomLineY);
     context.stroke();
 
-    // Draw example cursive text in the middle line (solid)
     context.font = '30px Dancing Script';
     context.fillText('Ants build kingdoms', 40, middleLineY - 10);
 
-    // Draw dotted version of the text as a tracing guide for cursive
-    context.setLineDash([5, 5]);  // Set dash pattern for dotted line
+    context.setLineDash([5, 5]);
     context.strokeText('Ants build kingdoms', 40, bottomLineY - 10);
-
-    context.setLineDash([]);  // Reset dash to default (solid line)
+    context.setLineDash([]);
 }

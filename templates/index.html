@@ -9,26 +9,25 @@
 <body>
     <h1>Handwriting Sentiment Classifier</h1>
 
-    <form id="inputForm">
+    <div>
         <label for="age">Age:</label>
-        <input type="number" id="age" name="age" min="6" max="18" required><br><br>
+        <input type="number" id="age" name="age">
 
         <label for="gender">Gender:</label>
         <select id="gender" name="gender">
             <option value="0">Boy</option>
             <option value="1">Girl</option>
-        </select><br><br>
+        </select>
 
         <label for="grade">Grade:</label>
-        <input type="number" id="grade" name="grade" min="1" max="12" required><br><br>
+        <input type="number" id="grade" name="grade">
+    </div>
 
-        <canvas id="handwritingCanvas" style="border:1px solid #000;"></canvas><br><br>
+    <canvas id="handwritingCanvas"></canvas>
+    <button id="clearCanvas">Clear</button>
+    <button id="submitCanvas">Submit</button>
 
-        <button type="button" id="clearCanvas">Clear Canvas</button>
-        <button type="button" id="submitCanvas">Submit Handwriting</button>
-    </form>
-
-    <p id="predictionResult">Prediction Result: </p>
+    <h2 id="predictionResult">Prediction Result</h2>
 
     <script src="{{ url_for('static', filename='js/handwriting.js') }}"></script>
 </body>
