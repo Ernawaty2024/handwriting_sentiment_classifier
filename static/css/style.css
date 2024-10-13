@@ -14,22 +14,6 @@ body {
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-}/* Global Styles */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
-
-.container {
-    width: 80%;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
 }
 
 h1 {
@@ -97,6 +81,7 @@ button:focus, input:focus, select:focus {
 .button-container {
     display: flex;
     justify-content: center;
+    margin-top: 20px;
 }
 
 #predictionResult {
@@ -118,49 +103,6 @@ button:focus, input:focus, select:focus {
     button {
         width: 100%;
     }
-}
-
-
-h1 {
-    text-align: center;
-    color: #4a90e2;
-}
-
-label {
-    font-weight: bold;
-    margin-right: 10px;
-}
-
-input[type="text"], input[type="number"], select {
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-button {
-    background-color: #4a90e2;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-button:hover {
-    background-color: #357ABD;
-}
-
-#handwritingCanvas {
-    border: 2px solid #4a90e2;
-    margin: 20px 0;
-    width: 100%;
-    max-width: 600px;
-    height: 300px;
-    cursor: crosshair;
-    display: block;  /* Ensure canvas is treated as a block-level element */
 }
 
 /* Additional media query for small screens */
@@ -171,60 +113,9 @@ button:hover {
     }
 }
 
-#handwritingCanvas {
-    touch-action: none;  /* Prevent default touch actions */
-}
-
 .canvas-container {
     display: flex;
     justify-content: center;  /* Center the canvas horizontally */
     align-items: center;      /* Center the canvas vertically (if needed) */
     margin: 20px 0;
-}
-
-.button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-#predictionResult {
-    text-align: center;
-    font-size: 18px;
-    color: #333;
-    margin-top: 20px;
-}
-
-/* Flexbox container for the form fields */
-.form-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.form-group {
-    display: flex;
-    align-items: center;
-    flex-basis: 30%;
-}
-
-/* Flexbox container for the buttons */
-.button-container {
-    display: flex;
-    justify-content: center;
-}
-
-/* Media query for mobile responsiveness */
-@media (max-width: 768px) {
-    .form-container {
-        flex-direction: column;
-    }
-    .form-group {
-        flex-basis: 100%;
-        margin-bottom: 10px;
-    }
-    button {
-        width: 100%;
-    }
 }

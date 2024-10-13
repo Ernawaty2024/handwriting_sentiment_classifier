@@ -34,6 +34,22 @@ window.onload = function () {
         currentBox = 'bold';  // Reset to bold
     };
 
+    // Download the handwriting data as a CSV
+    document.getElementById('downloadCsvButton').onclick = function () {
+        const age = document.getElementById('age').value;
+        const gender = document.getElementById('gender').value;
+        const grade = document.getElementById('grade').value;
+        
+        // Prepare the handwriting data to download as CSV
+        var handwritingData = {
+            handwriting_data: drawingData,
+            age: age,
+            gender: gender,
+            grade: grade
+        };
+        saveAsCSV(handwritingData);
+    };
+
     // Submit handwriting data
     document.getElementById('submitCanvas').onclick = function () {
         // Validate the form inputs for age, gender, and grade
@@ -53,9 +69,6 @@ window.onload = function () {
             gender: gender,
             grade: grade
         };
-
-        // Convert data to CSV format
-        saveAsCSV(handwritingData);
 
         // Send the data via fetch API to the back-end
         fetch('/submit_handwriting', {
@@ -226,87 +239,90 @@ window.onload = function () {
         context.fillText('Ants build kingdoms', x + 10, y + 3.4 * lineSpacing - 10);  // Adjusted to 4th line
     }
 
-        // Draw box B (Cursive tracing)
-        function drawBoxB(context, x, y, width, height, cmToPx) {
-            let topLine = 1.2 * cmToPx;
-            let midLine = 0.6 * cmToPx;
-            let bottomLine = 1.2 * cmToPx;
-            let startY = y;
-    
-            context.strokeStyle = '#000';
-            context.lineWidth = 1;
-    
-            context.beginPath();
-            context.moveTo(x, startY);
-            context.lineTo(x + width, startY);
+    // Draw box B (Cursive tracing)
+    function drawBoxB(context, x, y, width, height, cmToPx) {
+        let topLine = 1.2 * cmToPx;
+        let midLine = 0.6 * cmToPx;
+        let bottomLine = 1.2 * cmToPx;
+        let startY = y;
+
+        context.strokeStyle = '#000';
+        context.lineWidth = 1;
+
+        context.beginPath();
+        context.moveTo(x, startY);
+        context.lineTo(x + width, startY);
+        context.stroke();
+
+        startY += topLine;
+        context.beginPath();
+        context.moveTo(x, startY);
+        context.lineTo(x + width, startY);
+        context.stroke();
+
+        startY += midLine;
+        context.beginPath();
+        context.moveTo(x, startY);
+        context.lineTo(x + width, startY);
+        context.stroke();
+
+        startY += bottomLine;
+        context.beginPath();
+        context.moveTo(x, startY);
+        context.lineTo(x + width, startY);
+        context.stroke();
+
+        // Adjust dotted cursive text to be properly aligned with the lines
+        context.font = '50px Dancing Script';
+        context.textBaseline = 'alphabetic';
+        context.setLineDash([5, 5]);
+        context.strokeText('Ants build kingdoms', x + 14, startY - bottomLine -7.5);  // Adjusted to sit closer to the second line from the bottom
+        context.setLineDash([]);
+    }
+
+    // Function to draw on the canvas with smoothing
+    function drawOnCanvas(stroke) {
+        context.strokeStyle = 'black';
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
+
+        const l = stroke.length - 1;
+        if (stroke.length >= 3) {
+            const xc = (stroke[l].x + stroke[l - 1].x) / 2;
+            const yc = (stroke[l].y + stroke[l - 1].y) / 2;
+            context.lineWidth = stroke[l - 1].lineWidth;
+            context.quadraticCurveTo(stroke[l - 1].x, stroke[l - 1].y, xc, yc);
             context.stroke();
-    
-            startY += topLine;
             context.beginPath();
-            context.moveTo(x, startY);
-            context.lineTo(x + width, startY);
-            context.stroke();
-    
-            startY += midLine;
+            context.moveTo(xc, yc);
+        } else {
+            const point = stroke[l];
+            context.lineWidth = point.lineWidth;
             context.beginPath();
-            context.moveTo(x, startY);
-            context.lineTo(x + width, startY);
+            context.moveTo(point.x, point.y);
             context.stroke();
-    
-            startY += bottomLine;
-            context.beginPath();
-            context.moveTo(x, startY);
-            context.lineTo(x + width, startY);
-            context.stroke();
-    
-            // Adjust dotted cursive text to be properly aligned with the lines
-            context.font = '50px Dancing Script';
-            context.textBaseline = 'alphabetic';
-            context.setLineDash([5, 5]);
-            context.strokeText('Ants build kingdoms', x + 14, startY - bottomLine -7.5);  // Adjusted to sit closer to the second line from the bottom
-            context.setLineDash([]);
         }
-    
-        // Function to draw on the canvas with smoothing
-        function drawOnCanvas(stroke) {
-            context.strokeStyle = 'black';
-            context.lineCap = 'round';
-            context.lineJoin = 'round';
-    
-            const l = stroke.length - 1;
-            if (stroke.length >= 3) {
-                const xc = (stroke[l].x + stroke[l - 1].x) / 2;
-                const yc = (stroke[l].y + stroke[l - 1].y) / 2;
-                context.lineWidth = stroke[l - 1].lineWidth;
-                context.quadraticCurveTo(stroke[l - 1].x, stroke[l - 1].y, xc, yc);
-                context.stroke();
-                context.beginPath();
-                context.moveTo(xc, yc);
-            } else {
-                const point = stroke[l];
-                context.lineWidth = point.lineWidth;
-                context.beginPath();
-                context.moveTo(point.x, point.y);
-                context.stroke();
-            }
-        }
-    
-        // Function to convert handwriting data to CSV and download it
-        function saveAsCSV(handwritingData) {
-            const csvData = [];
-            csvData.push(['X', 'Y', 'Timestamp', 'Pressure', 'TiltX', 'TiltY', 'Azimuth', 'Box']); // Header row
-    
-            handwritingData.handwriting_data.forEach(point => {
-                csvData.push([point.x, point.y, point.timestamp, point.pressure, point.tiltX, point.tiltY, point.azimuth, point.box]);
-            });
-    
-            const csvContent = "data:text/csv;charset=utf-8," + csvData.map(e => e.join(",")).join("\n");
-    
-            const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", "handwriting_data.csv");
-            document.body.appendChild(link);
-            link.click();
-        }
-    };
-    
+    }
+
+    // CSV export helper function
+    function saveAsCSV(handwritingData) {
+        let csvContent = "data:text/csv;charset=utf-8,";
+        
+        // Add headers
+        csvContent += "x,y,timestamp,pressure,tiltX,tiltY,azimuth,box\n";
+
+        // Add handwriting data
+        handwritingData.handwriting_data.forEach(function(row) {
+            csvContent += `${row.x},${row.y},${row.timestamp},${row.pressure},${row.tiltX},${row.tiltY},${row.azimuth},${row.box}\n`;
+        });
+
+        // Create a downloadable link
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "handwriting_data.csv");
+        document.body.appendChild(link); // Required for Firefox
+
+        link.click(); // Trigger the download
+    }
+};
