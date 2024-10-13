@@ -12,18 +12,18 @@ window.onload = function () {
     canvas.height = 500;  // Increased height to accommodate both boxes
 
     // Prevent default touch actions to stop screen moving on iPad
-    canvas.addEventListener('touchstart', function (e) {
+    canvas.addEventListener('touchstart', function(e) {
         e.preventDefault();
     }, { passive: false });
 
-    canvas.addEventListener('touchmove', function (e) {
+    canvas.addEventListener('touchmove', function(e) {
         e.preventDefault();
     }, { passive: false });
 
     // Draw predefined lines and cursive template when canvas loads
     drawTemplate(context, canvas.width, canvas.height);
 
-    // Set up the drawing event listeners (new function)
+    // Setup drawing listeners
     setupDrawingListeners(canvas, context);
 
     // Clear the canvas and redraw the template
@@ -38,7 +38,7 @@ window.onload = function () {
     document.getElementById('submitCanvas').onclick = function () {
         // Validate the form inputs for age, gender, and grade
         var age = document.getElementById('age').value;
-        var gender = document.getElementById('gender').value;
+        var gender = document.getElementById('gender').value;  
         var grade = document.getElementById('grade').value;
 
         if (!age || !gender || !grade) {
@@ -47,12 +47,15 @@ window.onload = function () {
         }
 
         // Prepare the handwriting data to send to the server
-        var handwritingData = JSON.stringify({
+        var handwritingData = {
             handwriting_data: drawingData,
             age: age,
             gender: gender,
             grade: grade
-        });
+        };
+
+        // Convert data to CSV format
+        saveAsCSV(handwritingData);
 
         // Send the data via fetch API to the back-end
         fetch('/submit_handwriting', {
@@ -60,7 +63,7 @@ window.onload = function () {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: handwritingData
+            body: JSON.stringify(handwritingData)
         })
         .then(response => response.json())
         .then(data => {
@@ -76,6 +79,98 @@ window.onload = function () {
             document.getElementById('predictionResult').innerText = 'An error occurred';
         });
     };
+
+    // Function to setup drawing listeners
+    function setupDrawingListeners(canvas, context) {
+        // Start drawing when the pointer is pressed down (Apple Pencil supported)
+        for (const ev of ["touchstart", "mousedown"]) {
+            canvas.addEventListener(ev, function (e) {
+                if (isInBox(e, currentBox)) {
+                    isDrawing = true;
+                    let pressure = 0.1;
+                    let x, y;
+                    if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
+                        pressure = e.touches[0]["force"] > 0 ? e.touches[0]["force"] : pressure;
+                        x = e.touches[0].pageX - canvas.offsetLeft;
+                        y = e.touches[0].pageY - canvas.offsetTop;
+                    } else {
+                        pressure = 1.0;
+                        x = e.pageX - canvas.offsetLeft;
+                        y = e.pageY - canvas.offsetTop;
+                    }
+
+                    lineWidth = Math.log(pressure + 1) * 10;  // Thinner strokes
+                    context.lineWidth = lineWidth;
+                    context.strokeStyle = 'black';
+                    context.lineCap = 'round';
+                    context.lineJoin = 'round';
+
+                    points.push({ x, y, lineWidth });
+                    context.beginPath();
+                    context.moveTo(x, y);
+                    drawingData.push({
+                        x: x,
+                        y: y,
+                        timestamp: Date.now(),
+                        pressure: pressure,
+                        tiltX: e.tiltX || 0,
+                        tiltY: e.tiltY || 0,
+                        azimuth: e.azimuthAngle || 0,
+                        box: currentBox
+                    });
+                }
+            });
+        }
+
+        // Continue drawing and capture data including speed
+        for (const ev of ['touchmove', 'mousemove']) {
+            canvas.addEventListener(ev, function (e) {
+                if (isDrawing && isInBox(e, currentBox)) {
+                    e.preventDefault();
+
+                    let pressure = 0.1;
+                    let x, y;
+                    if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
+                        pressure = e.touches[0]["force"] > 0 ? e.touches[0]["force"] : pressure;
+                        x = e.touches[0].pageX - canvas.offsetLeft;
+                        y = e.touches[0].pageY - canvas.offsetTop;
+                    } else {
+                        pressure = 1.0;
+                        x = e.pageX - canvas.offsetLeft;
+                        y = e.pageY - canvas.offsetTop;
+                    }
+
+                    // Smoothen line width calculation
+                    lineWidth = (Math.log(pressure + 1) * 2);
+                    points.push({ x, y, lineWidth });
+
+                    // Draw the stroke smoothly
+                    drawOnCanvas(points);
+
+                    drawingData.push({
+                        x: x,
+                        y: y,
+                        timestamp: Date.now(),
+                        pressure: pressure,
+                        tiltX: e.tiltX || 0,
+                        tiltY: e.tiltY || 0,
+                        azimuth: e.azimuthAngle || 0,
+                        box: currentBox
+                    });
+                }
+            });
+        }
+
+        // Stop drawing when pointer is lifted
+        for (const ev of ['touchend', 'mouseup']) {
+            canvas.addEventListener(ev, function () {
+                isDrawing = false;
+                points = [];
+                // Switch to cursive box after finishing bold tracing
+                currentBox = currentBox === 'bold' ? 'cursive' : 'bold';
+            });
+        }
+    }
 
     // Helper function to check if the pointer is in the current box
     function isInBox(e, box) {
@@ -128,133 +223,90 @@ window.onload = function () {
         // Bold text should sit on the 4th line
         context.font = '50px Dancing Script';
         context.textBaseline = 'alphabetic';
-        context.fillText('Angin bertiup kencang', x + 10, y + 3.5 * lineSpacing - 10);  // Adjusted to 4th line
+        context.fillText('Ants build kingdoms', x + 10, y + 3.4 * lineSpacing - 10);  // Adjusted to 4th line
     }
 
-    // Draw box B (Cursive tracing)
-    function drawBoxB(context, x, y, width, height, cmToPx) {
-        let topLine = 1.2 * cmToPx;
-        let midLine = 0.6 * cmToPx;
-        let bottomLine = 1.2 * cmToPx;
-        let startY = y;
-
-        context.strokeStyle = '#000';
-        context.lineWidth = 1;
-
-        context.beginPath();
-        context.moveTo(x, startY);
-        context.lineTo(x + width, startY);
-        context.stroke();
-
-        startY += topLine;
-        context.beginPath();
-        context.moveTo(x, startY);
-        context.lineTo(x + width, startY);
-        context.stroke();
-
-        startY += midLine;
-        context.beginPath();
-        context.moveTo(x, startY);
-        context.lineTo(x + width, startY);
-        context.stroke();
-
-        startY += bottomLine;
-        context.beginPath();
-        context.moveTo(x, startY);
-        context.lineTo(x + width, startY);
-        context.stroke();
-
-        // Adjust dotted cursive text to be properly aligned with the lines
-        context.font = '50px Dancing Script';
-        context.textBaseline = 'alphabetic';
-        context.setLineDash([5, 5]);
-        context.strokeText('Angin bertiup kencang', x + 14, y + topLine + midLine - 2.5);  // Adjusted to sit closer to the second line from the bottom
-        context.setLineDash([]);
-    }
-
-    // Function to draw on the canvas with smoothing
-    function drawOnCanvas(stroke) {
-        context.strokeStyle = 'black';
-        context.lineCap = 'round';
-        context.lineJoin = 'round';
-
-        const l = stroke.length - 1;
-        if (stroke.length >= 3) {
-            const xc = (stroke[l].x + stroke[l - 1].x) / 2;
-            const yc = (stroke[l].y + stroke[l - 1].y) / 2;
-            context.lineWidth = stroke[l - 1].lineWidth;
-            context.quadraticCurveTo(stroke[l - 1].x, stroke[l - 1].y, xc, yc);
-            context.stroke();
+        // Draw box B (Cursive tracing)
+        function drawBoxB(context, x, y, width, height, cmToPx) {
+            let topLine = 1.2 * cmToPx;
+            let midLine = 0.6 * cmToPx;
+            let bottomLine = 1.2 * cmToPx;
+            let startY = y;
+    
+            context.strokeStyle = '#000';
+            context.lineWidth = 1;
+    
             context.beginPath();
-            context.moveTo(xc, yc);
-        } else {
-            const point = stroke[l];
-            context.lineWidth = point.lineWidth;
-            context.beginPath();
-            context.moveTo(point.x, point.y);
+            context.moveTo(x, startY);
+            context.lineTo(x + width, startY);
             context.stroke();
+    
+            startY += topLine;
+            context.beginPath();
+            context.moveTo(x, startY);
+            context.lineTo(x + width, startY);
+            context.stroke();
+    
+            startY += midLine;
+            context.beginPath();
+            context.moveTo(x, startY);
+            context.lineTo(x + width, startY);
+            context.stroke();
+    
+            startY += bottomLine;
+            context.beginPath();
+            context.moveTo(x, startY);
+            context.lineTo(x + width, startY);
+            context.stroke();
+    
+            // Adjust dotted cursive text to be properly aligned with the lines
+            context.font = '50px Dancing Script';
+            context.textBaseline = 'alphabetic';
+            context.setLineDash([5, 5]);
+            context.strokeText('Ants build kingdoms', x + 14, startY - bottomLine -7.5);  // Adjusted to sit closer to the second line from the bottom
+            context.setLineDash([]);
         }
-    }
-
-    // Define the function to set up drawing event listeners
-    function setupDrawingListeners(canvas, context) {
-        var points = [];
-        var isDrawing = false;
-
-        for (const ev of ["touchstart", "mousedown"]) {
-            canvas.addEventListener(ev, function (e) {
-                isDrawing = true;
-                points = [];
-                // Add initial points when drawing starts
-                addDrawingPoint(e, canvas, points);
+    
+        // Function to draw on the canvas with smoothing
+        function drawOnCanvas(stroke) {
+            context.strokeStyle = 'black';
+            context.lineCap = 'round';
+            context.lineJoin = 'round';
+    
+            const l = stroke.length - 1;
+            if (stroke.length >= 3) {
+                const xc = (stroke[l].x + stroke[l - 1].x) / 2;
+                const yc = (stroke[l].y + stroke[l - 1].y) / 2;
+                context.lineWidth = stroke[l - 1].lineWidth;
+                context.quadraticCurveTo(stroke[l - 1].x, stroke[l - 1].y, xc, yc);
+                context.stroke();
+                context.beginPath();
+                context.moveTo(xc, yc);
+            } else {
+                const point = stroke[l];
+                context.lineWidth = point.lineWidth;
+                context.beginPath();
+                context.moveTo(point.x, point.y);
+                context.stroke();
+            }
+        }
+    
+        // Function to convert handwriting data to CSV and download it
+        function saveAsCSV(handwritingData) {
+            const csvData = [];
+            csvData.push(['X', 'Y', 'Timestamp', 'Pressure', 'TiltX', 'TiltY', 'Azimuth', 'Box']); // Header row
+    
+            handwritingData.handwriting_data.forEach(point => {
+                csvData.push([point.x, point.y, point.timestamp, point.pressure, point.tiltX, point.tiltY, point.azimuth, point.box]);
             });
+    
+            const csvContent = "data:text/csv;charset=utf-8," + csvData.map(e => e.join(",")).join("\n");
+    
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", "handwriting_data.csv");
+            document.body.appendChild(link);
+            link.click();
         }
-
-        for (const ev of ['touchmove', 'mousemove']) {
-            canvas.addEventListener(ev, function (e) {
-                if (!isDrawing) return;
-                addDrawingPoint(e, canvas, points);
-                drawOnCanvas(points);  // Draw the points on the canvas
-            });
-        }
-
-        for (const ev of ['touchend', 'mouseup']) {
-            canvas.addEventListener(ev, function () {
-                isDrawing = false;
-            });
-        }
-    }
-
-    // Helper function to add points to the drawing array and adjust pressure
-    function addDrawingPoint(e, canvas, points) {
-        let pressure = 0.1;
-        let x, y;
-        
-        if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
-            pressure = e.touches[0]["force"] > 0 ? e.touches[0]["force"] : pressure;
-            x = e.touches[0].pageX - canvas.offsetLeft;
-            y = e.touches[0].pageY - canvas.offsetTop;
-        } else {
-            pressure = 1.0;
-            x = e.pageX - canvas.offsetLeft;
-            y = e.pageY - canvas.offsetTop;
-        }
-
-        const lineWidth = Math.log(pressure + 1) * 2;  // Adjusting line width based on pressure
-        
-        points.push({ x, y, lineWidth });
-        
-        // Push this drawing data to the global `drawingData` array for storage
-        drawingData.push({
-            x: x,
-            y: y,
-            timestamp: Date.now(),
-            pressure: pressure,
-            tiltX: e.tiltX || 0,
-            tiltY: e.tiltY || 0,
-            azimuth: e.azimuthAngle || 0,
-            box: currentBox
-        });
-    }
-};
-
+    };
+    

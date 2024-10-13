@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 import joblib
 import numpy as np
+import pandas as pd  # New import for CSV handling
+import os
 
 app = Flask(__name__)
 
@@ -53,19 +55,19 @@ def extract_features(data):
 def index():
     return render_template('index.html')
 
-# Route for handling handwriting submission and making predictions
+# Route for handling handwriting submission and saving as CSV
 @app.route('/submit_handwriting', methods=['POST'])
 def submit_handwriting():
     try:
         # Get the handwriting data from the front-end
         data = request.json
         handwriting_data = data.get('handwriting_data')  
-        age = int(data.get('age', 0))
-        gender = int(data.get('gender', 0))
-        grade = int(data.get('grade', 0))
+        age = int(data['age'])
+        gender = int(data['gender'])
+        grade = int(data['grade'])
 
-        if handwriting_data is None or not age or not gender or not grade:
-            return jsonify({'error': 'Handwriting data, age, gender, and grade are required.'}), 400
+        if handwriting_data is None:
+            return jsonify({'error': 'No handwriting data provided'}), 400
 
         # Preprocess the data to get the features for prediction
         preprocessed_data = preprocess_data(handwriting_data, age, gender, grade)
@@ -73,14 +75,22 @@ def submit_handwriting():
         # Make prediction using the Random Forest model
         prediction = best_rf_model.predict(preprocessed_data)
 
-        # Log the prediction result
-        app.logger.info(f"Prediction result: {prediction[0]}")
+        # Save the handwriting data as CSV
+        df = pd.DataFrame(handwriting_data)
+        csv_filename = f"handwriting_data_{age}_{gender}_{grade}.csv"
+        csv_filepath = os.path.join('output', csv_filename)
+        
+        # Ensure the 'output' directory exists
+        os.makedirs('output', exist_ok=True)
+        df.to_csv(csv_filepath, index=False)
 
-        # Send the prediction result back to the front-end
-        return jsonify({'emotion': prediction[0]})
+        # Log the prediction result
+        print("Prediction result:", prediction[0])
+
+        # Send the prediction result back to the front-end along with the CSV file path
+        return jsonify({'emotion': prediction[0], 'csv_file': csv_filename})
 
     except Exception as e:
-        app.logger.error(f"Error processing the request: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
