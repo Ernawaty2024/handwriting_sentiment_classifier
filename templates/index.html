@@ -10,7 +10,6 @@
 <body>
     <div class="container">
         <h1>Handwriting Emotion Detection</h1>
-
         <div class="form-container">
             <div class="form-group">
                 <label for="age">Age:</label>
@@ -20,7 +19,6 @@
                     <option value="7">7</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label for="gender">Gender:</label>
                 <select id="gender" name="gender" required>
@@ -29,7 +27,6 @@
                     <option value="1">Female</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label for="grade">Grade:</label>
                 <select id="grade" name="grade" required>
@@ -39,20 +36,15 @@
                 </select>
             </div>
         </div>
-
         <div class="canvas-container">
             <canvas id="handwritingCanvas"></canvas>
         </div>
-
         <div class="button-container">
             <button id="submitCanvas" type="button">Submit</button>
             <button id="clearCanvas" type="button">Clear</button>
-            <button id="downloadCsvButton" type="button">Download CSV</button>
         </div>
-
         <div id="predictionResult">Prediction Result</div>
     </div>
-
     <script src="/static/js/handwriting.js"></script>
 </body>
 </html>
