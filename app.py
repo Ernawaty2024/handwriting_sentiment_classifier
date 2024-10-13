@@ -60,12 +60,12 @@ def submit_handwriting():
         # Get the handwriting data from the front-end
         data = request.json
         handwriting_data = data.get('handwriting_data')  
-        age = int(data['age'])
-        gender = int(data['gender'])
-        grade = int(data['grade'])
+        age = int(data.get('age', 0))
+        gender = int(data.get('gender', 0))
+        grade = int(data.get('grade', 0))
 
-        if handwriting_data is None:
-            return jsonify({'error': 'No handwriting data provided'}), 400
+        if handwriting_data is None or not age or not gender or not grade:
+            return jsonify({'error': 'Handwriting data, age, gender, and grade are required.'}), 400
 
         # Preprocess the data to get the features for prediction
         preprocessed_data = preprocess_data(handwriting_data, age, gender, grade)
@@ -74,12 +74,13 @@ def submit_handwriting():
         prediction = best_rf_model.predict(preprocessed_data)
 
         # Log the prediction result
-        print("Prediction result:", prediction[0])
+        app.logger.info(f"Prediction result: {prediction[0]}")
 
         # Send the prediction result back to the front-end
         return jsonify({'emotion': prediction[0]})
 
     except Exception as e:
+        app.logger.error(f"Error processing the request: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':

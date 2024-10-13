@@ -4,50 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Handwriting Emotion Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <h1>Handwriting Emotion Detection</h1>
+    <div class="container">
+        <h1>Handwriting Emotion Detection</h1>
 
-    <div class="form-container">
-        <div class="form-group">
-            <label for="age">Age:</label>
-            <select id="age" name="age" required>
-                <option value="" disabled selected>Select age</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-            </select>
+        <div class="form-container">
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <select id="age" name="age" required>
+                    <option value="" disabled selected>Select age</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="0">Male</option>
+                    <option value="1">Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="grade">Grade:</label>
+                <select id="grade" name="grade" required>
+                    <option value="" disabled selected>Select grade</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="gender">Gender:</label>
-            <select id="gender" name="gender" required>
-                <option value="" disabled selected>Select gender</option>
-                <option value="0">Male</option>
-                <option value="1">Female</option>
-            </select>
+        <div class="canvas-container">
+            <canvas id="handwritingCanvas"></canvas>
         </div>
 
-        <div class="form-group">
-            <label for="grade">Grade:</label>
-            <select id="grade" name="grade" required>
-                <option value="" disabled selected>Select grade</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-            </select>
+        <div class="button-container">
+            <button id="submitCanvas" type="button">Submit</button>
+            <button id="clearCanvas" type="button">Clear</button>
         </div>
-    </div>
 
-    <div class="canvas-container">
-        <canvas id="handwritingCanvas"></canvas>
+        <div id="predictionResult">Prediction Result</div>
     </div>
-
-    <div class="button-container">
-        <button id="submitCanvas">Submit</button>
-        <button id="clearCanvas">Clear</button>
-    </div>
-
-    <div id="predictionResult">Prediction Result</div>
 
     <script src="/static/js/handwriting.js"></script>
 </body>
