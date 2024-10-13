@@ -59,7 +59,7 @@ def submit_handwriting():
     try:
         # Get the handwriting data from the front-end
         data = request.json
-        handwriting_data = data.get('handwriting_data')  # Use .get() to avoid KeyError
+        handwriting_data = data.get('handwriting_data')  
         age = int(data['age'])
         gender = int(data['gender'])
         grade = int(data['grade'])
@@ -72,6 +72,9 @@ def submit_handwriting():
 
         # Make prediction using the Random Forest model
         prediction = best_rf_model.predict(preprocessed_data)
+
+        # Log the prediction result
+        print("Prediction result:", prediction[0])
 
         # Send the prediction result back to the front-end
         return jsonify({'emotion': prediction[0]})
