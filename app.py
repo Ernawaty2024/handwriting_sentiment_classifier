@@ -10,10 +10,13 @@ with open('optimized_rf_model.joblib', 'rb') as model_file:
 
 # Function to preprocess the handwriting data
 def preprocess_data(handwriting_data, age, gender, grade):
-    # Separate bold and cursive data
-    bold_data = [d for d in handwriting_data if d['box'] == 'bold']
-    cursive_data = [d for d in handwriting_data if d['box'] == 'cursive']
-
+    # Check if handwriting_data is a list of dictionaries
+    if isinstance(handwriting_data, dict):
+        bold_data = handwriting_data.get('bold', [])
+        cursive_data = handwriting_data.get('cursive', [])
+    else:
+        raise ValueError("Invalid data format for handwriting_data")
+    
     # Extract features for bold and cursive separately
     features_bold = extract_features(bold_data, stroke_type='bold')
     features_cursive = extract_features(cursive_data, stroke_type='cursive')
@@ -25,30 +28,49 @@ def preprocess_data(handwriting_data, age, gender, grade):
         *features_bold      # Features for bold strokes
     ]
 
-     # Print the number of features captured
-    print("Number of features captured:", len(features_combined))
+    # Check if features_combined has exactly 17 elements
+    if len(features_combined) != 17:
+        raise ValueError(f"Expected 17 features, but got {len(features_combined)}")
+
+    # Print the number of features captured
+    print(f"Number of features captured: {len(features_combined)}")
 
     return np.array([features_combined])
 
 # Helper function to extract features from handwriting data
-def extract_features(data):
+def extract_features(data, stroke_type='bold'):
+    if not data:  # If data is empty, return default values
+        return [0, 0, 0, 0, 0, 0, 0]
+    
     speeds = [d['speed'] for d in data if 'speed' in d]
     pressures = [d['pressure'] for d in data if 'pressure' in d]
     tiltXs = [d['tiltX'] for d in data if 'tiltX' in d]
     tiltYs = [d['tiltY'] for d in data if 'tiltY' in d]
     azimuths = [d['azimuth'] for d in data if 'azimuth' in d]
 
+    # Calculate combined mean altitude as a single feature
+    mean_altitude = np.sqrt(np.mean(np.square(tiltXs)) + np.mean(np.square(tiltYs))) if tiltXs and tiltYs else 0
+
     # Modulus calculations for azimuth and tilt
     modulus_azimuth = np.sqrt(np.mean(np.square(azimuths))) if azimuths else 0
-    modulus_tilt = np.sqrt(np.mean(np.square(tiltXs)) + np.mean(np.square(tiltYs))) if tiltXs and tiltYs else 0
+    modulus_altitude = np.sqrt(np.mean(np.square(tiltXs)) + np.mean(np.square(tiltYs))) if tiltXs and tiltYs else 0
 
+# Print the extracted values for logging/debugging purposes
+    print(f"\nExtracting features for {stroke_type} strokes:")
+    print(f"  Number of strokes: {len(data)}")
+    print(f"  Mean speed: {np.mean(speeds) if speeds else 0}")
+    print(f"  Mean pressure: {np.mean(pressures) if pressures else 0}")
+    print(f"  Mean altitude: {mean_altitude}")
+    print(f"  Modulus altitude: {modulus_altitude}")
+    print(f"  Mean azimuth: {np.mean(azimuths) if azimuths else 0}")
+    print(f"  Modulus azimuth: {modulus_azimuth}")
+    
     return [
         len(data),  # Number of strokes
         np.mean(speeds) if speeds else 0,
         np.mean(pressures) if pressures else 0,
-        np.mean(tiltXs) if tiltXs else 0,
-        np.mean(tiltYs) if tiltYs else 0,
-        modulus_tilt,
+        mean_altitude,  # Consolidated mean altitude (from tiltX and tiltY)
+        modulus_altitude,
         np.mean(azimuths) if azimuths else 0,
         modulus_azimuth
     ]
@@ -65,6 +87,11 @@ def submit_handwriting():
         # Get the handwriting data from the front-end
         data = request.json
         handwriting_data = data.get('handwriting_data')  
+        
+        # Log the received handwriting data
+        app.logger.info(f"Received handwriting data: {handwriting_data}")
+
+        # Validate age, gender, and grade
         age = int(data.get('age', 0))
         gender = int(data.get('gender', 0))
         grade = int(data.get('grade', 0))

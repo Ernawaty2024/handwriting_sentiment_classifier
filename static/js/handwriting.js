@@ -42,10 +42,15 @@ window.onload = function () {
         var age = document.getElementById('age').value;
         var gender = document.getElementById('gender').value;
         var grade = document.getElementById('grade').value;
+
+        // Check if form is valid
         if (!age || !gender || !grade) {
             alert('Please fill out age, gender, and grade.');
             return;
         }
+
+        // Ensure that handwriting_data (drawingData) is a valid list of dictionaries
+        console.log('Handwriting Data:', drawingData);  // Log the data to check the structure
 
         // Prepare the handwriting data to send to the server
         var handwritingData = JSON.stringify({
@@ -236,7 +241,7 @@ window.onload = function () {
         } else {
             drawingData.cursive.push(strokeData);
         }
-
+        
         lastTimestamp = currentTime;
     }
 };
