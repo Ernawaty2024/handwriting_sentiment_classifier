@@ -58,13 +58,13 @@ def extract_features(data, stroke_type='bold'):
 # Print the extracted values for logging/debugging purposes
     print(f"\nExtracting features for {stroke_type} strokes:")
     print(f"  Number of strokes: {len(data)}")
-    print(f"  Mean speed: {np.mean(speeds) if speeds else 0}")
+    print(f"  Speed: {np.mean(speeds) if speeds else 0}")
     print(f"  Mean pressure: {np.mean(pressures) if pressures else 0}")
     print(f"  Mean altitude: {mean_altitude}")
     print(f"  Modulus altitude: {modulus_altitude}")
     print(f"  Mean azimuth: {np.mean(azimuths) if azimuths else 0}")
     print(f"  Modulus azimuth: {modulus_azimuth}")
-    
+
     return [
         len(data),  # Number of strokes
         np.mean(speeds) if speeds else 0,
