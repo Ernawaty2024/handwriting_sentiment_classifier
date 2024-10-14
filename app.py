@@ -13,17 +13,23 @@ def preprocess_data(handwriting_data, age, gender, grade):
     # Separate bold and cursive data
     bold_data = [d for d in handwriting_data if d['box'] == 'bold']
     cursive_data = [d for d in handwriting_data if d['box'] == 'cursive']
-    
+
     # Extract features for bold and cursive separately
-    features_bold = extract_features(bold_data)
-    features_cursive = extract_features(cursive_data)
-    
+    features_bold = extract_features(bold_data, stroke_type='bold')
+    features_cursive = extract_features(cursive_data, stroke_type='cursive')
+
     # Combine features with age, gender, and grade
     features_combined = [
         age, gender, grade,
-        *features_cursive, *features_bold
+        *features_cursive,  # Features for cursive strokes
+        *features_bold      # Features for bold strokes
     ]
+
+     # Print the number of features captured
+    print("Number of features captured:", len(features_combined))
+
     return np.array([features_combined])
+
 # Helper function to extract features from handwriting data
 def extract_features(data):
     speeds = [d['speed'] for d in data if 'speed' in d]
@@ -31,13 +37,14 @@ def extract_features(data):
     tiltXs = [d['tiltX'] for d in data if 'tiltX' in d]
     tiltYs = [d['tiltY'] for d in data if 'tiltY' in d]
     azimuths = [d['azimuth'] for d in data if 'azimuth' in d]
-    
+
     # Modulus calculations for azimuth and tilt
     modulus_azimuth = np.sqrt(np.mean(np.square(azimuths))) if azimuths else 0
     modulus_tilt = np.sqrt(np.mean(np.square(tiltXs)) + np.mean(np.square(tiltYs))) if tiltXs and tiltYs else 0
-    
+
     return [
         len(data),  # Number of strokes
+        np.mean(speeds) if speeds else 0,
         np.mean(pressures) if pressures else 0,
         np.mean(tiltXs) if tiltXs else 0,
         np.mean(tiltYs) if tiltYs else 0,
@@ -45,6 +52,7 @@ def extract_features(data):
         np.mean(azimuths) if azimuths else 0,
         modulus_azimuth
     ]
+
 # Route for the main page
 @app.route('/')
 def index():
@@ -61,7 +69,7 @@ def submit_handwriting():
         gender = int(data.get('gender', 0))
         grade = int(data.get('grade', 0))
         
-        if handwriting_data is None or not age or not gender or not grade:
+        if handwriting_data is None or age == 0 or gender not in [0, 1] or grade == 0:
             return jsonify({'error': 'Handwriting data, age, gender, and grade are required.'}), 400
         
         # Preprocess the data to get the features for prediction
