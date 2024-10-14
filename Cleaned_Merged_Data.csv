@@ -1,4 +1,4 @@
-Student ID,Ages (Years)_x,Gender_x,Grade_x,Speed_C,Number Stroke_C,Mean Pressure_C,Mean Altitude_C,Modulus Altitude_C,Mean Azimuth_C,Modulus Azimuth_C,Speed_B,Number Stroke_B,Mean Pressure_B,Mean Altitude_B,Modulus Altitude_B,Mean Azimuth_B,Modulus Azimuth_B,Label Emotion_y,Fine Motor Skill Label
+Student ID,age,gender,grade,speed,number_stroke,mean_pressure,mean_altitude,modulus_altitude,mean_azimuth,modulus_azimuth,speed,number_strokes,mean_pressure,mean_altitude,modulus_altitude,mean_azimuth,modulus_azimuth,Label Emotion_y,Fine Motor Skill Label
 10001.0,7.083333333333333,0,1.0,165,28,474,1467,1520,579,600,87,28,474,1467,1520,579,600,positive,1.0
 10003.0,6.416666666666667,0,1.0,155,44,302,1160,1220,468,460,116,50,318,1235,1240,501,480,negative,0.0
 10004.0,6.166666666666667,0,1.0,128,89,240,1102,1080,559,550,100,55,295,1073,1070,565,550,positive,1.0

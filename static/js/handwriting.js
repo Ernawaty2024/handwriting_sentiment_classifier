@@ -4,11 +4,15 @@ window.onload = function () {
     var isDrawing = false;
     var drawingData = [];
     var points = [];
+    var lastPoint = null;  // To track the previous point for speed calculation
     var lineWidth = 0;
     var currentBox = 'bold';  // Start with bold tracing
+    
+
     // Set canvas size
     canvas.width = 600;
-    canvas.height = 500;  // Increased height to accommodate both boxes
+    canvas.height = 500;  
+
     // Prevent default touch actions to stop screen moving on iPad
     canvas.addEventListener('touchstart', function (e) {
         e.preventDefault();
@@ -16,10 +20,13 @@ window.onload = function () {
     canvas.addEventListener('touchmove', function (e) {
         e.preventDefault();
     }, { passive: false });
+
     // Draw predefined lines and cursive template when canvas loads
     drawTemplate(context, canvas.width, canvas.height);
+
     // Set up the drawing event listeners (new function)
     setupDrawingListeners(canvas, context);
+
     // Clear the canvas and redraw the template
     document.getElementById('clearCanvas').onclick = function () {
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -27,16 +34,19 @@ window.onload = function () {
         drawingData = [];  // Clear drawing data
         currentBox = 'bold';  // Reset to bold
     };
+
     // Submit handwriting data
     document.getElementById('submitCanvas').onclick = function () {
         // Validate the form inputs for age, gender, and grade
         var age = document.getElementById('age').value;
         var gender = document.getElementById('gender').value;
         var grade = document.getElementById('grade').value;
+        
         if (!age || !gender || !grade) {
             alert('Please fill out age, gender, and grade.');
             return;
         }
+
         // Prepare the handwriting data to send to the server
         var handwritingData = JSON.stringify({
             handwriting_data: drawingData,
@@ -44,6 +54,7 @@ window.onload = function () {
             gender: gender,
             grade: grade
         });
+
         // Send the data via fetch API to the back-end
         fetch('/submit_handwriting', {
             method: 'POST',
@@ -66,6 +77,7 @@ window.onload = function () {
             document.getElementById('predictionResult').innerText = 'An error occurred';
         });
     };
+
     // Helper function to check if the pointer is in the current box
     function isInBox(e, box) {
         const x = e.clientX - canvas.offsetLeft;
@@ -77,6 +89,7 @@ window.onload = function () {
         }
         return false;
     }
+
     // Function to draw the handwriting template (both Box A and Box B)
     function drawTemplate(context, width, height) {
         const cmToPx = 37.8; // Conversion from cm to px
@@ -91,12 +104,14 @@ window.onload = function () {
         // Draw Box B (Cursive Tracing)
         drawBoxB(context, boxBX, boxBY, boxWidth, boxHeight, cmToPx);
     }
+
     // Draw box A (Bold tracing)
     function drawBoxA(context, x, y, width, height, cmToPx) {
         let lineSpacing = 0.6 * cmToPx;
         let startY = y;
         context.strokeStyle = '#000';
         context.lineWidth = 1;
+
         // Adjust number of lines and space to properly position the text
         for (let i = 0; i < 6; i++) {
             context.beginPath();
@@ -105,10 +120,11 @@ window.onload = function () {
             context.stroke();
             startY += lineSpacing;
         }
+
         // Bold text should sit on the 4th line
         context.font = '50px Dancing Script';
         context.textBaseline = 'alphabetic';
-        context.fillText('Angin bertiup kencang', x + 10, y + 3.5 * lineSpacing - 10);  // Adjusted to 4th line
+        context.fillText('Ants build kingdoms', x + 10, y + 3.5 * lineSpacing - 10);  
     }
     // Draw box B (Cursive tracing)
     function drawBoxB(context, x, y, width, height, cmToPx) {
@@ -137,13 +153,81 @@ window.onload = function () {
         context.moveTo(x, startY);
         context.lineTo(x + width, startY);
         context.stroke();
+
         // Adjust dotted cursive text to be properly aligned with the lines
         context.font = '50px Dancing Script';
         context.textBaseline = 'alphabetic';
         context.setLineDash([5, 5]);
-        context.strokeText('Angin bertiup kencang', x + 14, y + topLine + midLine - 2.5);  // Adjusted to sit closer to the second line from the bottom
+        context.strokeText('Ants build kingdoms', x + 14, y + topLine + midLine - 2.5);  
         context.setLineDash([]);
     }
+
+    // Define the function to set up drawing event listeners
+    function setupDrawingListeners(canvas, context) {
+        var points = [];
+        var isDrawing = false;
+
+        for (const ev of ["touchstart", "mousedown"]) {
+            canvas.addEventListener(ev, function (e) {
+                isDrawing = true;
+                points = [];
+                lastPoint = null;  // Reset the last point for speed calculation
+                // Add initial points when drawing starts
+                addDrawingPoint(e, canvas, points);
+            });
+        }
+        for (const ev of ['touchmove', 'mousemove']) {
+            canvas.addEventListener(ev, function (e) {
+                if (!isDrawing) return;
+                addDrawingPoint(e, canvas, points);
+                drawOnCanvas(points);  // Draw the points on the canvas
+            });
+        }
+        for (const ev of ['touchend', 'mouseup']) {
+            canvas.addEventListener(ev, function () {
+                isDrawing = false;
+                points = [];
+                currentBox = currentBox === 'bold' ? 'cursive' : 'bold
+            });
+        }
+
+        // Helper function to add points to the drawing array and adjust pressure
+        function addDrawingPoint(e, canvas, points) {
+            let pressure = 0.1;
+            let x, y;
+        
+            if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
+                pressure = e.touches[0]["force"] > 0 ? e.touches[0]["force"] : pressure;
+                x = e.touches[0].pageX - canvas.offsetLeft;
+                y = e.touches[0].pageY - canvas.offsetTop;
+            } else {
+                pressure = 1.0;
+                x = e.pageX - canvas.offsetLeft;
+                y = e.pageY - canvas.offsetTop;
+            }
+            const lineWidth = Math.log(pressure + 1) * 2;  // Adjusting line width based on pressure
+            const currentTime = Date.now();
+            const timeDifference = currentTime - lastTimestamp;
+            const speed = timeDifference > 0 ? Math.sqrt(x * x + y * y) / timeDifference : 0;
+
+            points.push({ x, y, lineWidth });
+        
+            // Push this drawing data to the global `drawingData` array for storage
+            drawingData.push({
+                x,y,
+                speed,
+                timestamp: currentTime,
+                pressure,
+                tiltX: e.tiltX || 0,
+                tiltY: e.tiltY || 0,
+                azimuth: e.azimuthAngle || 0,
+                box: currentBox
+            });
+            
+            lastTimestamp = currentTime;
+        }
+    }
+
     // Function to draw on the canvas with smoothing
     function drawOnCanvas(stroke) {
         context.strokeStyle = 'black';
@@ -166,59 +250,5 @@ window.onload = function () {
             context.stroke();
         }
     }
-    // Define the function to set up drawing event listeners
-    function setupDrawingListeners(canvas, context) {
-        var points = [];
-        var isDrawing = false;
-        for (const ev of ["touchstart", "mousedown"]) {
-            canvas.addEventListener(ev, function (e) {
-                isDrawing = true;
-                points = [];
-                // Add initial points when drawing starts
-                addDrawingPoint(e, canvas, points);
-            });
-        }
-        for (const ev of ['touchmove', 'mousemove']) {
-            canvas.addEventListener(ev, function (e) {
-                if (!isDrawing) return;
-                addDrawingPoint(e, canvas, points);
-                drawOnCanvas(points);  // Draw the points on the canvas
-            });
-        }
-        for (const ev of ['touchend', 'mouseup']) {
-            canvas.addEventListener(ev, function () {
-                isDrawing = false;
-            });
-        }
-    }
-    // Helper function to add points to the drawing array and adjust pressure
-    function addDrawingPoint(e, canvas, points) {
-        let pressure = 0.1;
-        let x, y;
-        
-        if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
-            pressure = e.touches[0]["force"] > 0 ? e.touches[0]["force"] : pressure;
-            x = e.touches[0].pageX - canvas.offsetLeft;
-            y = e.touches[0].pageY - canvas.offsetTop;
-        } else {
-            pressure = 1.0;
-            x = e.pageX - canvas.offsetLeft;
-            y = e.pageY - canvas.offsetTop;
-        }
-        const lineWidth = Math.log(pressure + 1) * 2;  // Adjusting line width based on pressure
-        
-        points.push({ x, y, lineWidth });
-        
-        // Push this drawing data to the global `drawingData` array for storage
-        drawingData.push({
-            x: x,
-            y: y,
-            timestamp: Date.now(),
-            pressure: pressure,
-            tiltX: e.tiltX || 0,
-            tiltY: e.tiltY || 0,
-            azimuth: e.azimuthAngle || 0,
-            box: currentBox
-        });
-    }
+     
 };

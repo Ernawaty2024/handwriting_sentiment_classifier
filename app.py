@@ -35,6 +35,7 @@ def extract_features(data):
     # Modulus calculations for azimuth and tilt
     modulus_azimuth = np.sqrt(np.mean(np.square(azimuths))) if azimuths else 0
     modulus_tilt = np.sqrt(np.mean(np.square(tiltXs)) + np.mean(np.square(tiltYs))) if tiltXs and tiltYs else 0
+    
     return [
         len(data),  # Number of strokes
         np.mean(pressures) if pressures else 0,
