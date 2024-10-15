@@ -246,9 +246,9 @@ window.onload = function () {
             speed,
             timestamp: currentTime,
             pressure: pressure,
-            tiltX: tiltX,
-            tiltY: tiltY,
-            azimuth: azimuthAngle,
+            tiltX: e.tiltX || 0,
+            tiltY: e.tiltY || 0,
+            azimuth: e.azimuthAngle || 0,
             box: currentBox
         };
 
