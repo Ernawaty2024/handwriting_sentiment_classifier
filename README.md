@@ -1,9 +1,22 @@
 # Handwriting Sentiment Classifier
 
-## Overview
-Handwriting-Sentiment-Classifier is a Flask web app that collects handwriting samples and uses a trained machine learning model to predict sentiment (positive or negative). Features such as writing speed, pressure, and stroke angles are analyzed to classify the emotion behind the handwriting.
+Handwriting-Sentiment-Classifier captures handwriting data (speed, pressure, azimuth, and altitude from a web canvas and uses machine learning (Random Forest) to predict the writers's emotion. The data is captured using a drawing interfaxe and processed on the backend for predictions.
 
-### Datasets Collection:
+## Table of Contents
+1. Project Overview
+2. Features
+3. Requirements
+4. Project Structure
+5. Components
+    - Frontend (JavaScript)
+    - Backend (Flask)
+    - Machine Learning Model
+6. Running the Project
+7. Logging and Debugging
+8. Acknowledgements
+
+
+### Project Overview:
 Handwriting can reveal crucial insights into an individual's motor skills and emotional state. This data explores handwriting features to assess a child's Fine Motor Skills (FMS) and emotions while writing. This data collection encompasses two distinct handwriting tasks: sentence bolding and word copying. Three psychologists use these tasks to observe children's expressions and movements, enabling a comprehensive analysis of their emotional responses and FMS proficiency during the writing process. The resulting handwriting dataset comprises seven variables and three target data collected from 98 elementary students aged 6 to 9. 
 *   <img width="599" alt="image" src="https://github.com/user-attachments/assets/be957c7b-eae1-472f-8c34-231afb7d6032">
 
