@@ -207,6 +207,10 @@ window.onload = function () {
     function addDrawingPoint(e, canvas, points) {
         let pressure = 0.1;
         let x, y;
+        let tiltX = e.tiltX || 0;  // Capture tiltX, default to 0 if not supported
+        let tiltY = e.tiltY || 0;  // Capture tiltY, default to 0 if not supported
+        let azimuth = e.azimuthAngle || 0;  // Capture azimuth, default to 0 if not supported
+
         if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
             pressure = e.touches[0]["force"] > 0 ? e.touches[0]["force"] : pressure;
             x = e.touches[0].pageX - canvas.offsetLeft;
@@ -216,12 +220,24 @@ window.onload = function () {
             x = e.pageX - canvas.offsetLeft;
             y = e.pageY - canvas.offsetTop;
         }
+
         const lineWidth = Math.log(pressure + 1) * 2;
         const currentTime = Date.now();
         const timeDifference = currentTime - lastTimestamp;
         const speed = timeDifference > 0 ? Math.sqrt(x * x + y * y) / timeDifference : 0;
 
+        // Check if tilt values are supported by the device
+        if (!e.tiltX || !e.tiltY) {
+            console.warn('Tilt values are not supported or captured by this device');
+        }
+
         points.push({ x, y, lineWidth });
+
+        // Log the captured values to verify they are working correctly
+        console.log('Captured TiltX:', tiltX);
+        console.log('Captured TiltY:', tiltY);
+        console.log('Captured Azimuth:', azimuth);
+        console.log('Captured Speed:', speed);
 
         // Depending on currentBox ('bold' or 'cursive'), push data to respective array
         const strokeData = {
@@ -230,9 +246,9 @@ window.onload = function () {
             speed,
             timestamp: currentTime,
             pressure: pressure,
-            tiltX: e.tiltX || 0,
-            tiltY: e.tiltY || 0,
-            azimuth: e.azimuthAngle || 0,
+            tiltX: tiltX,
+            tiltY: tiltY,
+            azimuth: azimuthAngle,
             box: currentBox
         };
 
