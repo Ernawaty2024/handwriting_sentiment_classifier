@@ -104,46 +104,61 @@ window.onload = function () {
 
     function addDrawingPoint(e, canvas, points) {
         let pressure = 0.1;
-        let x = e.pageX - canvas.offsetLeft;
-        let y = e.pageY - canvas.offsetTop;
+        let x, y;
         let tiltX = e.tiltX || 0;  // Capture tiltX, default to 0 if not supported
         let tiltY = e.tiltY || 0;  // Capture tiltY, default to 0 if not supported
         let azimuth = e.azimuthAngle || 0;  // Capture azimuth, default to 0 if not supported
-
-        if (e.pressure && e.pressure > 0) {
-            pressure = e.pressure;
+    
+        if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
+            pressure = e.touches[0]["force"] > 0 ? e.touches[0]["force"] : pressure;
+            x = e.touches[0].pageX - canvas.offsetLeft;
+            y = e.touches[0].pageY - canvas.offsetTop;
+        } else {
+            pressure = 1.0;
+            x = e.pageX - canvas.offsetLeft;
+            y = e.pageY - canvas.offsetTop;
         }
-
+    
         const lineWidth = Math.log(pressure + 1) * 2;
         const currentTime = Date.now();
         const timeDifference = currentTime - lastTimestamp;
         const speed = timeDifference > 0 ? Math.sqrt(x * x + y * y) / timeDifference : 0;
-
-        // Log azimuth and tilt values to check if they are being captured
-        console.log('Azimuth:', azimuth, 'TiltX:', tiltX, 'TiltY:', tiltY, 'Speed:', speed);
-
+    
+        // Check if azimuth is supported by the device
+        if (!e.azimuthAngle) {
+            console.warn('Azimuth angle is not supported by this device/browser');
+        }
+    
         points.push({ x, y, lineWidth });
-
+    
+        // Log the captured values to verify they are working correctly
+        console.log('Captured TiltX:', tiltX);
+        console.log('Captured TiltY:', tiltY);
+        console.log('Captured Azimuth:', azimuth);  // Log azimuth value to ensure it's being captured
+        console.log('Captured Speed:', speed);
+    
+        // Depending on currentBox ('bold' or 'cursive'), push data to respective array
         const strokeData = {
             x, 
             y,
             speed,
             timestamp: currentTime,
             pressure: pressure,
-            tiltX: tiltX,
-            tiltY: tiltY,
-            azimuth: azimuth,
+            tiltX: e.tiltX || 0,
+            tiltY: e.tiltY || 0,
+            azimuth: e.azimuthAngle || 0,
             box: currentBox
         };
-
+    
         if (currentBox === 'bold') {
             drawingData.bold.push(strokeData);
         } else {
             drawingData.cursive.push(strokeData);
         }
-        
+    
         lastTimestamp = currentTime;
     }
+    
 
     // Draw the template (boxes for handwriting)
     function drawTemplate(context, width, height) {
