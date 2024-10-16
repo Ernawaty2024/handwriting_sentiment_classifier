@@ -10,9 +10,11 @@ window.onload = function () {
     var lineWidth = 0;
     var currentBox = 'bold';  // Start with bold tracing
     var lastTimestamp = null;
+
     // Set canvas size
     canvas.width = 600;
     canvas.height = 500;  // Increased height to accommodate both boxes
+
     // Prevent default touch actions to stop screen moving on iPad
     canvas.addEventListener('pointerdown', function (e) {
         e.preventDefault();
@@ -20,10 +22,13 @@ window.onload = function () {
     canvas.addEventListener('pointermove', function (e) {
         e.preventDefault();
     }, { passive: false });
+
     // Draw predefined lines and cursive template when canvas loads
     drawTemplate(context, canvas.width, canvas.height);
+
     // Set up the drawing event listeners using Pointer Events
     setupDrawingListeners(canvas, context);
+
     // Clear the canvas and redraw the template
     document.getElementById('clearCanvas').onclick = function () {
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -31,6 +36,7 @@ window.onload = function () {
         drawingData = { cursive: [], bold: [] };  // Clear drawing data
         currentBox = 'bold';  // Reset to bold
     };
+
     // Submit handwriting data
     document.getElementById('submitCanvas').onclick = function () {
         var age = document.getElementById('age').value;
@@ -50,6 +56,7 @@ window.onload = function () {
             gender: gender,
             grade: grade
         });
+
         // Send the data via fetch API to the back-end
         fetch('/submit_handwriting', {
             method: 'POST',
@@ -69,6 +76,7 @@ window.onload = function () {
         var points = [];
         var isDrawing = false;
         var lastTimestamp = null;
+
         // Use pointer events instead of touch events for better support of stylus inputs
         canvas.addEventListener('pointerdown', function (e) {
             isDrawing = true;
@@ -123,6 +131,7 @@ window.onload = function () {
         
         lastTimestamp = currentTime;
     }
+
     // Draw the template (boxes for handwriting)
     function drawTemplate(context, width, height) {
         const cmToPx = 37.8;
@@ -135,6 +144,7 @@ window.onload = function () {
         drawBoxA(context, boxAX, boxAY, boxWidth, boxHeight, cmToPx);
         drawBoxB(context, boxBX, boxBY, boxWidth, boxHeight, cmToPx);
     }
+
     // Function to draw the boxes
     function drawBoxA(context, x, y, width, height, cmToPx) {
         let lineSpacing = 0.6 * cmToPx;
@@ -152,6 +162,7 @@ window.onload = function () {
         context.textBaseline = 'alphabetic';
         context.fillText('Ants build kingdoms', x + 10, y + 3.5 * lineSpacing - 10);
     }
+    
     // Function to draw the cursive box
     function drawBoxB(context, x, y, width, height, cmToPx) {
         let topLine = 1.2 * cmToPx;

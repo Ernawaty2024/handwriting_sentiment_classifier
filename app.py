@@ -10,7 +10,7 @@ with open('optimized_rf_model.joblib', 'rb') as model_file:
 
 # Function to preprocess the handwriting data
 def preprocess_data(handwriting_data, age, gender, grade):
-    # Check if handwriting_data is a list of dictionaries
+    # Check if handwriting_data is a dictionary with 'bold' and 'cursive' keys
     if isinstance(handwriting_data, dict):
         bold_data = handwriting_data.get('bold', [])
         cursive_data = handwriting_data.get('cursive', [])
@@ -57,8 +57,8 @@ def extract_features(data, stroke_type='bold'):
 
     # Print the extracted values for logging/debugging purposes
     print(f"\nExtracting features for {stroke_type} strokes:")
-    print(f"  Number of strokes: {len(data)}")
     print(f"  Speed: {np.mean(speeds) if speeds else 0}")
+    print(f"  Number of strokes: {len(data)}")
     print(f"  Mean pressure: {np.mean(pressures) if pressures else 0}")
     print(f"  Mean altitude: {mean_altitude}")
     print(f"  Modulus altitude: {modulus_altitude}")
@@ -66,8 +66,8 @@ def extract_features(data, stroke_type='bold'):
     print(f"  Modulus azimuth: {modulus_azimuth}")
 
     return [
-        len(data),  # Number of strokes
         np.mean(speeds) if speeds else 0,
+        len(data),  # Number of strokes
         np.mean(pressures) if pressures else 0,
         mean_altitude,  # Consolidated mean altitude (from tiltX and tiltY)
         modulus_altitude,
