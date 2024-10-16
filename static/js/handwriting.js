@@ -107,13 +107,13 @@ window.onload = function () {
         let x, y;
         let tiltX = e.tiltX || 0;  // Capture tiltX, default to 0 if not supported
         let tiltY = e.tiltY || 0;  // Capture tiltY, default to 0 if not supported
-        let azimuth = 0;  // Capture azimuth, default to 0 if not supported
+        let azimuth = 0;
     
         // Check if the event is from a stylus (Apple Pencil)
         if (e.pointerType === 'pen') {
             azimuth = e.azimuthAngle || 0;  // Capture azimuth for stylus if available
         }
-
+    
         if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
             pressure = e.touches[0]["force"] > 0 ? e.touches[0]["force"] : pressure;
             x = e.touches[0].pageX - canvas.offsetLeft;
@@ -129,7 +129,7 @@ window.onload = function () {
         const timeDifference = currentTime - lastTimestamp;
         const speed = timeDifference > 0 ? Math.sqrt(x * x + y * y) / timeDifference : 0;
     
-        // Check if azimuth is supported by the device
+        // Log azimuth information if it's available
         if (!e.azimuthAngle) {
             console.warn('Azimuth angle is not supported by this device/browser');
         }
@@ -151,7 +151,7 @@ window.onload = function () {
             pressure: pressure,
             tiltX: tiltX,
             tiltY: tiltY,
-            azimuth: azimuthAngle,
+            azimuth: azimuth,  // Use azimuth captured for stylus
             box: currentBox
         };
     
@@ -163,6 +163,7 @@ window.onload = function () {
     
         lastTimestamp = currentTime;
     }
+    
     
 
     // Draw the template (boxes for handwriting)
