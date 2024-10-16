@@ -107,8 +107,13 @@ window.onload = function () {
         let x, y;
         let tiltX = e.tiltX || 0;  // Capture tiltX, default to 0 if not supported
         let tiltY = e.tiltY || 0;  // Capture tiltY, default to 0 if not supported
-        let azimuth = e.azimuthAngle || 0;  // Capture azimuth, default to 0 if not supported
+        let azimuth = 0;  // Capture azimuth, default to 0 if not supported
     
+        // Check if the event is from a stylus (Apple Pencil)
+        if (e.pointerType === 'pen') {
+            azimuth = e.azimuthAngle || 0;  // Capture azimuth for stylus if available
+        }
+
         if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
             pressure = e.touches[0]["force"] > 0 ? e.touches[0]["force"] : pressure;
             x = e.touches[0].pageX - canvas.offsetLeft;
@@ -144,9 +149,9 @@ window.onload = function () {
             speed,
             timestamp: currentTime,
             pressure: pressure,
-            tiltX: e.tiltX || 0,
-            tiltY: e.tiltY || 0,
-            azimuth: e.azimuthAngle || 0,
+            tiltX: e.tiltX,
+            tiltY: e.tiltY,
+            azimuth: azimuthAngle,
             box: currentBox
         };
     
