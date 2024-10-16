@@ -53,9 +53,9 @@ def extract_features(data, stroke_type='bold'):
 
     # Modulus calculations for azimuth and tilt
     modulus_azimuth = np.sqrt(np.mean(np.square(azimuths))) if azimuths else 0
-    modulus_altitude = np.sqrt(np.mean(np.square(tiltXs)) + np.mean(np.square(tiltYs))) if tiltXs and tiltYs else 0
+    modulus_altitude = np.mean(np.abs(tiltXs)) + np.mean(np.abs(tiltYs)) if tiltXs and tiltYs else 0
 
-# Print the extracted values for logging/debugging purposes
+    # Print the extracted values for logging/debugging purposes
     print(f"\nExtracting features for {stroke_type} strokes:")
     print(f"  Number of strokes: {len(data)}")
     print(f"  Speed: {np.mean(speeds) if speeds else 0}")
