@@ -149,8 +149,8 @@ window.onload = function () {
             speed,
             timestamp: currentTime,
             pressure: pressure,
-            tiltX: e.tiltX,
-            tiltY: e.tiltY,
+            tiltX: tiltX,
+            tiltY: tiltY,
             azimuth: azimuthAngle,
             box: currentBox
         };
