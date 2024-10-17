@@ -158,7 +158,7 @@ window.onload = function () {
             context.stroke();
             startY += lineSpacing;
         }
-        context.font = '50px Dancing Script';
+        context.font = '45px Playwrite VN';
         context.textBaseline = 'alphabetic';
         context.fillText('Ants build kingdoms', x + 10, y + 3.5 * lineSpacing - 10);
     }
@@ -190,7 +190,7 @@ window.onload = function () {
         context.moveTo(x, startY);
         context.lineTo(x + width, startY);
         context.stroke();
-        context.font = '50px Dancing Script';
+        context.font = '45px Playwrite VN';
         context.textBaseline = 'alphabetic';
         context.setLineDash([5, 5]);  // Dashed line for cursive text
         context.strokeText('Ants build kingdoms', x + 14, y + topLine + midLine - 2.5);
