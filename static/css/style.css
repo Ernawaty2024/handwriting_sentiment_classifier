@@ -13,7 +13,7 @@ body {
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-}/* Global Styles */
+}
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f9;
@@ -69,6 +69,7 @@ button:focus, input:focus, select:focus {
     display: block;  /* Ensure canvas is treated as a block-level element */
     touch-action: none;  /* Prevent default touch actions */
 }
+
 /* Flexbox container for the form fields */
 .form-container {
     display: flex;
