@@ -4,65 +4,31 @@ Handwriting-Sentiment-Classifier captures handwriting data (speed, pressure, azi
 
 ## Table of Contents
 * [Project Overview](#starproject-overview)
-* [Usage Instructions](#star2usage-instructions)
-* [Formulas](#computerformulas)
+* [Website Instructions](#star2usage-instructions)
 * [Files](#blue_heartfiles)
 * [Business View](#green_heartbusiness-view)
 * [Limitations](#wavelimitations)
 * [Future Improvements](#purple_heartfuture-improvements)
 * [Ethical Considerations](#yellow_heartethical-considerations)
-* [Project URL](#snowflakeproject-url)
+* [Group Members](#snowflake_group_members)
 
 ### :star:Project Overview
 The Handwriting Emotion Detection project leverages graphology to predict emotional states from handwriting data. By collecting key features such as pressure, speed, tilt, and stroke types (cursive and bold), it predicts the emotion of the writer using a trained machine learning model, specifically a Random Forest classifier.
 
-The project is hosted on Heroku and can be accessed here: [Handwriting Emotion Detection](https://graphology-emotion-detector-4523ecd5cbab.herokuapp.com/).
+Handwriting can reveal crucial insights into an individual's motor skills and emotional state. This data explores handwriting features to assess a child's Fine Motor Skills (FMS) and emotions while writing. This data collection encompasses two distinct handwriting tasks: sentence bolding and word copying. 
 
-Handwriting can reveal crucial insights into an individual's motor skills and emotional state. This data explores handwriting features to assess a child's Fine Motor Skills (FMS) and emotions while writing. This data collection encompasses two distinct handwriting tasks: sentence bolding and word copying. Three psychologists use these tasks to observe children's expressions and movements, enabling a comprehensive analysis of their emotional responses and FMS proficiency during the writing process. The resulting handwriting dataset comprises seven variables and three target data collected from 98 elementary students aged 6 to 9. 
-*   <img width="599" alt="image" src="https://github.com/user-attachments/assets/be957c7b-eae1-472f-8c34-231afb7d6032">
+Three psychologists use these tasks to observe children's expressions and movements, enabling a comprehensive analysis of their emotional responses and FMS proficiency during the writing process. The resulting handwriting dataset comprises seven variables and three target data collected from 98 elementary students aged 6 to 9. 
 
-*  <img width="810" alt="image" src="https://github.com/user-attachments/assets/05bb607c-f8ee-4dea-aaee-af2adab1d79b">
-
-### :star2:Usage Instructions
+### :star2: <code style ="color:blue">[Handwriting Emotion Detection](https://graphology-emotion-detector-4523ecd5cbab.herokuapp.com/)</code>Website Instructions
 1. **Select Age, Gender, and Grade**: Users must input their demographic information.
 2. **Handwriting Input**: The user writes on the canvas. Two boxes are provided: one for bold strokes and one for cursive.
 3. **Submit**: Once the user has completed their handwriting input, the data is processed and sent to the back-end for emotion prediction.
-4. **Result**: The predicted emotion is displayed on the screen.
+4. **Clear**: To clear out the writing canvas.
+5. **Result**: The predicted emotion is displayed on the screen.
 
-### :computer:Formulas
-The key handwriting features used for emotion detection are calculated as follows:
 
-- **Speed**: 
-  \[
-  Speed = \frac{\sqrt{x^2 + y^2}}{\Delta Time}
-  \]
-  Where \(x\) and \(y\) are the coordinates of the handwriting strokes, and \(\Delta Time\) is the time difference between two consecutive points.
 
-- **Pressure**: The pressure is recorded directly from the drawing input device (e.g., stylus). If pressure is not provided, a default value is used.
-
-- **Mean Altitude**: 
-  \[
-  Mean \ Altitude = \sqrt{Mean(TiltX^2) + Mean(TiltY^2)}
-  \]
-  Where TiltX and TiltY are the tilt angles of the stylus, and the formula calculates the combined mean altitude from these angles.
-
-- **Modulus Azimuth**: 
-  \[
-  Modulus \ Azimuth = \sqrt{Mean(Azimuth^2)}
-  \]
-  Where Azimuth is the azimuth angle of the handwriting input.
-
-- **Modulus Altitude**: 
-  \[
-  Modulus \ Altitude = Mean(|TiltX|) + Mean(|TiltY|)
-  \]
-  This combines the absolute values of TiltX and TiltY to calculate the modulus of altitude.
-
-- **Number of Strokes**: The total count of continuous handwriting strokes is calculated as the number of times the user touches down and lifts up while drawing.
-
-These features are combined with demographic data (age, gender, grade) and used by the machine learning model for emotion prediction.
-
-### :blue_heart:Files
+### :computer:Files
 - **index.html**: The front-end page for collecting user data (age, gender, grade) and handwriting samples.
 - **handwriting.js**: JavaScript logic for handling the drawing canvas and capturing handwriting data.
 - **Flask back-end**: Python Flask framework for handling predictions.
@@ -89,7 +55,5 @@ Handwriting analysis has a wide range of potential applications in education, me
 ### :yellow_heart:Ethical Considerations
 The research prioritized careful and ethical conduct throughout the study. Approval was obtained from the National and Political Unity Agency and the Education Office of Jember Regency, confirming adherence to established research ethics guidelines. Ethical clearance was also granted by the Institutional Review Board of the education authorities.
 
-# :snowflake:Project URL
-The project is live and can be accessed at: [Handwriting Emotion Detection](https://graphology-emotion-detector-4523ecd5cbab.herokuapp.com/).
-
-Group Members: Ernawaty Ernawaty; Rachel Chuang; Yao Xiao
+# :snowflake:Group Members
+Ernawaty Ernawaty; Rachel Chuang; Yao Xiao
