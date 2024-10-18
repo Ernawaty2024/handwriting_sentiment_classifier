@@ -3,15 +3,15 @@
 Handwriting-Sentiment-Classifier captures handwriting data (speed, pressure, azimuth, and altitude from a web canvas and uses machine learning (Random Forest) to predict the writers's emotion. The data is captured using a drawing interfaxe and processed on the backend for predictions.
 
 ## Table of Contents
-* Project Overview
-* Usage Instructions 
-* Formulas
-* Files
-* Business View
-* Limitations
-* Future Improvements
-* Ethical Considerations
-* Project URL
+* [Project Overview](#project-overview)
+* [Usage Instructions](#usage-instructions)
+* [Formulas](#formulas)
+* [Files](#files)
+* [Business View](#business-view)
+* [Limitations](#limitations)
+* [Future Improvements](#future-improvements)
+* [Ethical Considerations](#ethical-considerations)
+* [Project URL](#project-url)
 
 ### Project Overview
 The Handwriting Emotion Detection project leverages graphology to predict emotional states from handwriting data. By collecting key features such as pressure, speed, tilt, and stroke types (cursive and bold), it predicts the emotion of the writer using a trained machine learning model, specifically a Random Forest classifier.
