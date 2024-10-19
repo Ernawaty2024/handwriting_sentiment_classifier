@@ -68,3 +68,27 @@ These features are combined with demographic data (age, gender, grade) and used 
 
 ## Project URL
 The project is live and can be accessed at: [Handwriting Emotion Detection](https://graphology-emotion-detector-4523ecd5cbab.herokuapp.com/).
+
+## Project Structure
+handwriting_sentiment_classifier/
+├── data/
+│   └── handwriting_data.json          
+├── Resources/
+│   ├── Bold the Sentence Task Emotion Label.xlsx    # Excel file for sentence task labeling.
+│   ├── Cursive Writing in a Dotted Line Emotion Label.xlsx    # Excel file for cursive writing labeling.
+│   └── Fine Motor Skill Label.xlsx        # Excel file for motor skill labeling.
+├── static/
+│   ├── css/
+│   │   └── style.css                     # Styling for the frontend webpage.
+│   └── js/
+│       └── handwriting.js                # JavaScript to handle handwriting input and submission.
+├── templates/
+│   └── index.html                        # HTML for user interaction and handwriting input.
+├── venv/                                  # Virtual environment for the project.
+├── app.py                                 # Flask backend logic for handling requests and predictions.
+├── Cleaned_Merged_Data.csv                # Cleaned and merged dataset for analysis.
+├── Merged_Cursive_Bold_Data.csv           # Merged dataset for handwriting data.
+├── ModelData.ipynb                        # Jupyter Notebook with model-related data.
+├── optimized_rf_model.joblib              # Optimized Random Forest model.
+├── requirements.txt                       # Dependencies for the project.
+├── Readme.md
