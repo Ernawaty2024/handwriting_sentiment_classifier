@@ -15,12 +15,7 @@
         <div class="form-container">
             <div class="form-group">
                 <label for="age">Age:</label>
-                <select id="age" name="age" required>
-                    <option value="ages" disabled selected>Select age</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                </select>
+                <input type="number" id="age" name="age" required placeholder="Enter your age" min="1">
             </div>
             <div class="form-group">
                 <label for="gender">Gender:</label>
@@ -34,8 +29,13 @@
                 <label for="grade">Grade:</label>
                 <select id="grade" name="grade" required>
                     <option value="" disabled selected>Select grade</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
+                    <option value="elementary">Elementary</option>
+                    <option value="junior_high">Junior High</option>
+                    <option value="high_school">High School</option>
+                    <option value="university">University</option>
+                    <option value="graduate_school">Graduate School</option>
+                    <option value="employed">Employed</option>
+                    <option value="unemployed">Unemployed</option>
                 </select>
             </div>
         </div>
@@ -47,6 +47,10 @@
             <button id="clearCanvas" type="button">Clear</button>
         </div>
         <div id="predictionResult">Prediction Result</div>
+
+        <div class="warning-container">
+            <p><strong>Important:</strong> This tool is not intended for medical diagnosis. The results are for educational purposes only. If you have any concerns about your mental or emotional health, please consult a qualified healthcare professional. Do not use this tool as a substitute for professional medical advice, diagnosis, or treatment.</p>
+        </div>
     </div>
     <script src="/static/js/handwriting.js"></script>
 </body>
