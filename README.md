@@ -29,11 +29,11 @@ Three psychologists use these tasks to observe children's expressions and moveme
 5. **Result**: The predicted emotion is displayed on the screen.
 
 ## Files
-- **index.html**: The front-end page for collecting user data (age, gender, grade) and handwriting samples.
-- **handwriting.js**: JavaScript logic for handling the drawing canvas and capturing handwriting data.
-- **Flask back-end**: Python Flask framework for handling predictions.
-- **fine_tuned_rf_model.joblib**: Pre-trained Random Forest model for emotion detection.
-- **style.css**: CSS for styling the web application.
+- **<code style ="color:blue">[index.html](C:\Users\Ernie\Documents\GitHub\handwriting_sentiment_classifier\templates\index.html)</code>**: The front-end page for collecting user data (age, gender, grade) and handwriting samples.
+- **<code style ="color:blue">[handwriting.js](C:\Users\Ernie\Documents\GitHub\handwriting_sentiment_classifier\static\js\handwriting.js)</code>**: JavaScript logic for handling the drawing canvas and capturing handwriting data.
+- **<code style ="color:blue">[Flask back-end](C:\Users\Ernie\Documents\GitHub\handwriting_sentiment_classifier\app.py)</code>**: Python Flask framework for handling predictions.
+- **<code style ="color:blue">[fine_tuned_rf_model.joblib](C:\Users\Ernie\Documents\GitHub\handwriting_sentiment_classifier\fine_tuned_rf_model.joblib)</code>**: Pre-trained Random Forest model for emotion detection.
+- **<code style ="color:blue">[style.css](C:\Users\Ernie\Documents\GitHub\handwriting_sentiment_classifier\static\css\style.css)</code>**: CSS for styling the web application.
 
 ## Project Tree
 handwriting_sentiment_classifier\
@@ -52,7 +52,7 @@ handwriting_sentiment_classifier\
 ├── fine_tuned_rf_model.joblib\
 ├── ModelData.ipynb\
 ├── Procfile\
-├── requirements.txt\
+├── requirements.txt
 
 ## Business View
 Handwriting analysis has a wide range of potential applications in education, mental health, and security. In this project, emotional prediction from handwriting could be utilized in the following scenarios:
