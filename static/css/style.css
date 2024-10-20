@@ -103,6 +103,7 @@ button:focus, input:focus, select:focus {
     display: flex;
     justify-content: center;
     margin-top: 20px;
+    gap: 20px;
 }
 
 /* Style for the result text */
@@ -134,5 +135,10 @@ button:focus, input:focus, select:focus {
 
     button {
         width: 100%;
+    }
+
+    .button-container {
+        flex-direction: column;
+        gap: 10px;  /* Adds space between buttons on mobile */
     }
 }
