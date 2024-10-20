@@ -159,6 +159,15 @@ button:hover {
     align-items: center;      /* Center the canvas vertically (if needed) */
     margin: 20px 0;
 }
+
+/* Warning container styles with reduced font size */
+.warning-container {
+    text-align: center;
+    font-size: 12px; /* Reduce the font size for the warning */
+    color: #d9534f;  /* Optional: Change the color to a warning red */
+    margin-top: 30px;
+}
+
 .button-container {
     display: flex;
     justify-content: center;
