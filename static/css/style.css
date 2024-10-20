@@ -33,6 +33,19 @@ h1 {
     text-align: center;
     color: #4a90e2;
 }
+
+/* Centering instructions container */
+.instructions-container {
+    text-align: center; /* Center the text */
+    margin: 20px 0; /* Margin for spacing */
+}
+
+.instructions-container p {
+    font-size: 18px; /* Increase font size */
+    color: #ccc; /* Instruction text color */
+    font-weight: bold; /* Make instructions stand out */
+}
+
 label {
     font-weight: bold;
     margin-right: 10px;
