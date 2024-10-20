@@ -80,7 +80,7 @@ Integrate the handwriting emotion detection model with other mental health tools
 The research prioritized careful and ethical conduct throughout the study. Approval was obtained from the National and Political Unity Agency and the Education Office of Jember Regency, confirming adherence to established research ethics guidelines. Ethical clearance was also granted by the Institutional Review Board of the education authorities.
 
 ## Credit
-The dataset used for trainin gand testing the model is publicly available from <code style ="color:blue">[Mendeley Data](https://data.mendeley.com/datasets/jkdxpvcb23/1)</code>. 
+The datasets used for training gand testing the model are publicly available from <code style ="color:blue">[Mendeley Data](https://data.mendeley.com/datasets/jkdxpvcb23/1)</code>. 
 
 ## Group Members
 Ernawaty Ernawaty; Rachel Chuang; Yao Xiao
