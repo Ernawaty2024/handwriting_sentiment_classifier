@@ -4,18 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Handwriting Emotion Detection</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playwrite+VN:wght@100..400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
     <div class="container">
         <h1>Handwriting Emotion Detection</h1>
-        <div class="instructions-container">
-            <p><strong>Instructions:</strong> Please <strong>Bold</strong> and <strong>Trace</strong> the sentences below.</p>
-        </div>
-
         <div class="form-container">
             <div class="form-group">
                 <label for="age">Age:</label>
@@ -43,6 +37,9 @@
                 </select>
             </div>
         </div>
+        <div class="instructions-container">
+            <p><strong>Instructions:</strong> Please <strong>Bold</strong> and <strong>Trace</strong> the sentences below.</p>
+        </div>
         <div class="canvas-container">
             <canvas id="handwritingCanvas"></canvas>
         </div>
@@ -55,6 +52,8 @@
         <div class="warning-container">
             <p><strong>Important:</strong> This tool is not intended for medical diagnosis. The results are for educational purposes only. If you have any concerns about your mental or emotional health, please consult a qualified healthcare professional. Do not use this tool as a substitute for professional medical advice, diagnosis, or treatment.</p>
         </div>
+
+        <div id="font-preload" style="font-family: 'Playwrite VN'; font-size: 0; visibility: hidden;">Font Preloader</div>
     </div>
     <script src="/static/js/handwriting.js"></script>
 </body>

@@ -24,7 +24,9 @@ window.onload = function () {
     }, { passive: false });
 
     // Draw predefined lines and cursive template when canvas loads
-    drawTemplate(context, canvas.width, canvas.height);
+    document.fonts.ready.then(function () {
+        drawTemplate(context, canvas.width, canvas.height);
+    });
 
     // Set up the drawing event listeners using Pointer Events
     setupDrawingListeners(canvas, context);

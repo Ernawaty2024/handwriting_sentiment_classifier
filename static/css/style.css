@@ -6,6 +6,7 @@ body {
     margin: 0;
     padding: 0;
 }
+
 .container {
     width: 80%;
     margin: 50px auto;
@@ -14,49 +15,51 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
-.container {
-    width: 80%;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
+
 h1 {
     text-align: center;
     color: #4a90e2;
 }
 
-/* Centering instructions container */
+/* Flexbox container for the form fields */
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    flex-basis: 30%;
+}
+
+label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+input[type="text"], input[type="number"], select {
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Centering the Instructions Section */
 .instructions-container {
-    text-align: center; /* Center the text */
-    margin: 20px 0; /* Margin for spacing */
+    text-align: center;
+    margin: 20px 0;
 }
 
 .instructions-container p {
-    font-size: 18px; /* Increase font size */
-    color: #ccc; /* Instruction text color */
-    font-weight: bold; /* Make instructions stand out */
+    font-size: 18px;
+    color: #ccc;
 }
 
-label {
-    font-weight: bold;
-    margin-right: 10px;
-}
-input[type="text"], input[type="number"], select {
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
+/* Style for buttons */
 button {
     background-color: #4a90e2;
     color: white;
@@ -66,12 +69,16 @@ button {
     cursor: pointer;
     font-size: 16px;
 }
+
 button:hover {
     background-color: #357ABD;
 }
+
 button:focus, input:focus, select:focus {
-    outline: 2px solid #4a90e2;  /* Accessibility: Visible outline when focused */
+    outline: 2px solid #4a90e2;
 }
+
+/* Style for the canvas */
 #handwritingCanvas {
     border: 2px solid #4a90e2;
     margin: 20px 0;
@@ -79,145 +86,52 @@ button:focus, input:focus, select:focus {
     max-width: 600px;
     height: 300px;
     cursor: crosshair;
-    display: block;  /* Ensure canvas is treated as a block-level element */
-    touch-action: none;  /* Prevent default touch actions */
+    display: block;
+    touch-action: none;
+    font-family: 'Playwrite VN', sans-serif;  /* Apply the custom font only to the canvas */
 }
 
-/* Flexbox container for the form fields */
-.form-container {
+.canvas-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
+    margin: 20px 0;
 }
-.form-group {
-    display: flex;
-    align-items: center;
-    flex-basis: 30%;
-}
+
 /* Flexbox container for the buttons */
 .button-container {
     display: flex;
     justify-content: center;
+    margin-top: 20px;
 }
+
+/* Style for the result text */
 #predictionResult {
     text-align: center;
     font-size: 18px;
     color: #333;
     margin-top: 20px;
 }
-/* Media query for mobile responsiveness */
-@media (max-width: 768px) {
-    .form-container {
-        flex-direction: column;
-    }
-    .form-group {
-        flex-basis: 100%;
-        margin-bottom: 10px;
-    }
-    button {
-        width: 100%;
-    }
-}
 
-h1 {
-    text-align: center;
-    color: #4a90e2;
-}
-label {
-    font-weight: bold;
-    margin-right: 10px;
-}
-input[type="text"], input[type="number"], select {
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-button {
-    background-color: #4a90e2;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-}
-button:hover {
-    background-color: #357ABD;
-}
-#handwritingCanvas {
-    border: 2px solid #4a90e2;
-    margin: 20px 0;
-    width: 100%;
-    max-width: 600px;
-    height: 300px;
-    cursor: crosshair;
-    display: block;  /* Ensure canvas is treated as a block-level element */
-}
-/* Additional media query for small screens */
-@media (max-width: 480px) {
-    #handwritingCanvas {
-        width: 100%;  /* Ensure full width on mobile devices */
-        height: 400px;  /* Adjust height to fit small screens */
-    }
-}
-#handwritingCanvas {
-    touch-action: none;  /* Prevent default touch actions */
-}
-.canvas-container {
-    display: flex;
-    justify-content: center;  /* Center the canvas horizontally */
-    align-items: center;      /* Center the canvas vertically (if needed) */
-    margin: 20px 0;
-}
-
-/* Warning container styles with reduced font size */
+/* Warning message style */
 .warning-container {
     text-align: center;
-    font-size: 12px; /* Reduce the font size for the warning */
-    color: #d9534f;  /* Optional: Change the color to a warning red */
+    font-size: 12px;
+    color: #d9534f;
     margin-top: 30px;
 }
 
-.button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-#predictionResult {
-    text-align: center;
-    font-size: 18px;
-    color: #333;
-    margin-top: 20px;
-}
-/* Flexbox container for the form fields */
-.form-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-.form-group {
-    display: flex;
-    align-items: center;
-    flex-basis: 30%;
-}
-/* Flexbox container for the buttons */
-.button-container {
-    display: flex;
-    justify-content: center;
-}
 /* Media query for mobile responsiveness */
 @media (max-width: 768px) {
     .form-container {
         flex-direction: column;
     }
+
     .form-group {
         flex-basis: 100%;
         margin-bottom: 10px;
     }
+
     button {
         width: 100%;
     }
