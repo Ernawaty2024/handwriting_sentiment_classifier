@@ -5,11 +5,11 @@ import numpy as np
 app = Flask(__name__)
 
 # Load the trained Random Forest model
-with open('optimized_rf_model.joblib', 'rb') as model_file:
-    best_rf_model = joblib.load(model_file)
+with open('fine_tuned_rf_model.joblib', 'rb') as model_file:
+    best_rf_model_fine_tune = joblib.load(model_file)
 
 # Function to preprocess the handwriting data
-def preprocess_data(handwriting_data, age, gender, grade):
+def preprocess_data(handwriting_data):
     # Check if handwriting_data is a dictionary with 'bold' and 'cursive' keys
     if isinstance(handwriting_data, dict):
         bold_data = handwriting_data.get('bold', [])
@@ -21,16 +21,15 @@ def preprocess_data(handwriting_data, age, gender, grade):
     features_bold = extract_features(bold_data, stroke_type='bold')
     features_cursive = extract_features(cursive_data, stroke_type='cursive')
 
-    # Combine features with age, gender, and grade
+    # Combine handwriting features 
     features_combined = [
-        age, gender, grade,
         *features_cursive,  # Features for cursive strokes
         *features_bold      # Features for bold strokes
     ]
 
-    # Check if features_combined has exactly 17 elements
-    if len(features_combined) != 17:
-        raise ValueError(f"Expected 17 features, but got {len(features_combined)}")
+    # Check if features_combined has exactly 14 elements
+    if len(features_combined) != 14:
+        raise ValueError(f"Expected 14 features, but got {len(features_combined)}")
 
     # Print the number of features captured
     print(f"Number of features captured: {len(features_combined)}")
@@ -84,26 +83,24 @@ def index():
 @app.route('/submit_handwriting', methods=['POST'])
 def submit_handwriting():
     try:
-        # Get the handwriting data from the front-end
+        # Get the handwriting data and demographic info from the front-end
         data = request.json
         handwriting_data = data.get('handwriting_data')  
+        age = data.get('age')
+        gender = data.get('gender')
+        grade = data.get('grade')
         
         # Log the received handwriting data
-        app.logger.info(f"Received handwriting data: {handwriting_data}")
-
-        # Validate age, gender, and grade
-        age = int(data.get('age', 0))
-        gender = int(data.get('gender', 0))
-        grade = int(data.get('grade', 0))
+        app.logger.info(f"Received handwriting data: {handwriting_data}, Age: {age}, Gender: {gender}, Grade: {grade}")
         
-        if handwriting_data is None or age == 0 or gender not in [0, 1] or grade == 0:
-            return jsonify({'error': 'Handwriting data, age, gender, and grade are required.'}), 400
+        if handwriting_data is None:
+            return jsonify({'error': 'Handwriting data is required.'}), 400
         
         # Preprocess the data to get the features for prediction
-        preprocessed_data = preprocess_data(handwriting_data, age, gender, grade)
+        preprocessed_data = preprocess_data(handwriting_data)
         
         # Make prediction using the Random Forest model
-        prediction = best_rf_model.predict(preprocessed_data)
+        prediction = best_rf_model_fine_tune.predict(preprocessed_data)
         
         # Log the prediction result
         app.logger.info(f"Prediction result: {prediction[0]}")
