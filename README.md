@@ -4,7 +4,7 @@ Handwriting-Sentiment-Classifier captures handwriting data (speed, pressure, azi
 
 ## Table of Contents
 * [Project Overview](#project-overview)
-* [Website Instructions](#https://github.com/Ernawaty2024/handwriting_sentiment_classifier/edit/main/README.md#handwriting-emotion-detection-website-instructions)
+* [Website Instructions](#handwriting-emotion-detection-website-instructions)
 * [Files](#files)
 * [Project Tree](#project-tree)
 * [Business View](#business-view)
